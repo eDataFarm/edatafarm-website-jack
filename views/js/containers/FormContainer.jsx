@@ -5,6 +5,7 @@ class FormContainer extends React.Component {
         this.state = {
             newUser: {
                 name: '',
+                email: '',
                 age: '',
                 gender: '',
                 resume: '',
@@ -97,7 +98,7 @@ class FormContainer extends React.Component {
           "http://localhost:3000/api/users",
           userData,
               response => {
-              console.log("res... ", response);
+              // console.log("res... ", response);
               this.setState({ users: response });
               this.props.users = response;
           });
@@ -105,6 +106,10 @@ class FormContainer extends React.Component {
 
   handleFormSubmit(e) {
       e.preventDefault();
+      let email = localStorage.getItem("email");
+      if (email) {
+          this.state.newUser.email = email
+      }
       let userData = this.state.newUser;
 
       this.serverRequest(userData);
@@ -114,12 +119,13 @@ class FormContainer extends React.Component {
       e.preventDefault();
       this.setState({
           newUser: {
-          name: '',
-          age: '',
-          gender: '',
-          resume: '',
-          education: [],
-          about: ''
+              name: '',
+              email: '',
+              age: '',
+              gender: '',
+              resume: '',
+              education: [],
+              about: ''
           },
       })
   }

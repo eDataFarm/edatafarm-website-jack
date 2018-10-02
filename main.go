@@ -37,6 +37,7 @@ type JSONWebKeys struct {
 type User struct {
 	Id			int
 	Name 		string 		`db:"name" form:"name" binding:"required"`
+	Email 		string 		`db:"email" form:"email" binding:"required"`
 	Age  		int 		`db:"age" form:"age" binding:"required"`
 	Gender 		string 		`db:"gender" form:"gender" binding:"required"`
 	Resume 		string 		`db:"resume" form:"resume" binding:"required"`
@@ -167,7 +168,7 @@ func CreateUser(c *gin.Context) {
 
 		var lastInsertId int
 		err = db.QueryRow("INSERT INTO userinfo(name, age, gender, resume, education, about, email) VALUES($1,$2,$3,$4,$5,$6,$7) returning id;",
-			user.Name, user.Age, user.Gender, user.Resume, strings.Join(user.Education, ","), user.About, user.Name + "@yahoo.com").Scan(&lastInsertId)
+			user.Name, user.Age, user.Gender, user.Resume, strings.Join(user.Education, ","), user.About, user.Email).Scan(&lastInsertId)
 		if err != nil {
 			fmt.Println("Unable to insert userinfo into db. Error message", err.Error())
 			c.JSON(http.StatusServiceUnavailable, err.Error())

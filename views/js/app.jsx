@@ -24,6 +24,7 @@ class App extends React.Component {
                     "profile",
                     JSON.stringify(authResult.idTokenPayload)
                 );
+                localStorage.setItem("email", authResult.idTokenPayload.name);
                 window.location = window.location.href.substr(
                     0,
                     window.location.href.indexOf("#")
