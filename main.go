@@ -1,18 +1,19 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
-	"strconv"
-
-	"github.com/auth0/go-jwt-middleware"
-	"github.com/gin-gonic/contrib/static"
-	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 type Response struct {
@@ -32,27 +33,22 @@ type JSONWebKeys struct {
 	X5c []string `json:"x5c"`
 }
 
-// Let's create our Jokes struct. This will contain information about a Joke
-
-// Joke contains information about a single Joke
-type Joke struct {
-  ID     int     `json:"id" binding:"required"`
-  Likes  int     `json:"likes"`
-  Joke   string  `json:"joke" binding:"required"`
-}
-
-// We'll create a list of jokes
-var jokes = []Joke{
-  Joke{1, 0, "Did you hear about the restaurant on the moon? Great food, no atmosphere."},
-  Joke{2, 0, "What do you call a fake noodle? An Impasta."},
-  Joke{3, 0, "How many apples grow on a tree? All of them."},
-  Joke{4, 0, "Want to hear a joke about paper? Nevermind it's tearable."},
-  Joke{5, 0, "I just watched a program about beavers. It was the best dam program I've ever seen."},
-  Joke{6, 0, "Why did the coffee file a police report? It got mugged."},
-  Joke{7, 0, "How does a penguin build it's house? Igloos it together."},
+// User contains information about a single User
+type User struct {
+	Id			int
+	Name 		string 		`db:"name" form:"name" binding:"required"`
+	Age  		int 		`db:"age" form:"age" binding:"required"`
+	Gender 		string 		`db:"gender" form:"gender" binding:"required"`
+	Resume 		string 		`db:"resume" form:"resume" binding:"required"`
+	Education 	[]string	`db:"education" form:"education[]"`
+	About 		string 		`db:"about" form:"about" binding:"required"`
 }
 
 var jwtMiddleWare *jwtmiddleware.JWTMiddleware
+
+const DBName = "edatafarm"
+
+var db *sql.DB
 
 func main() {
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
@@ -60,13 +56,13 @@ func main() {
 			aud := os.Getenv("AUTH0_API_AUDIENCE")
 			checkAudience := token.Claims.(jwt.MapClaims).VerifyAudience(aud, false)
 			if !checkAudience {
-				return token, errors.New("Invalid audience.")
+				return token, errors.New("invalid audience")
 			}
 			// verify iss claim
 			iss := os.Getenv("AUTH0_DOMAIN")
 			checkIss := token.Claims.(jwt.MapClaims).VerifyIssuer(iss, false)
 			if !checkIss {
-				return token, errors.New("Invalid issuer.")
+				return token, errors.New("invalid issuer")
 			}
 
 			cert, err := getPemCert(token)
@@ -96,8 +92,8 @@ func main() {
 				"message": "pong",
 			})
 		})
-		api.GET("/jokes", authMiddleware(), JokeHandler)
-		api.POST("/jokes/like/:jokeID", authMiddleware(), LikeJoke)
+		api.GET("/users", authMiddleware(), UserHandler)
+		api.POST("/users", authMiddleware(), CreateUser)
 	}
 
 	// Start and run the server
@@ -149,29 +145,40 @@ func authMiddleware() gin.HandlerFunc {
 	}
 }
 
-// JokeHandler retrieves a list of available jokes
-func JokeHandler(c *gin.Context) {
+// UserHandler retrieves a list of available users
+func UserHandler(c *gin.Context) {
   c.Header("Content-Type", "application/json")
-  c.JSON(http.StatusOK, jokes)
+  users := make([]string, 0, 50)
+  c.JSON(http.StatusOK, users)
 }
 
-// LikeJoke increments the likes of a particular joke Item
-func LikeJoke(c *gin.Context) {
-  // confirm Joke ID sent is valid
-  // remember to import the `strconv` package
-  if jokeid, err := strconv.Atoi(c.Param("jokeID")); err == nil {
-    // find joke, and increment likes
-    for i := 0; i < len(jokes); i++ {
-      if jokes[i].ID == jokeid {
-        jokes[i].Likes += 1
-      }
-    }
+// CreateUser creates a new user
+func CreateUser(c *gin.Context) {
+	user:= User{}
+	c.Bind(&user)
 
-    // return a pointer to the updated jokes list
-    c.JSON(http.StatusOK, &jokes)
-  } else {
-    // Joke ID is invalid
-    c.AbortWithStatus(http.StatusNotFound)
-  }
+	if user.Name != "" && user.Resume != "" {
+		dbinfo := fmt.Sprintf("dbname=%s sslmode=disable", DBName)
+		db, err := sql.Open("postgres", dbinfo)
+		if err != nil {
+			log.Fatalln("Failed to open connection to db: ", err.Error())
+		}
+		defer db.Close()
+
+		var lastInsertId int
+		err = db.QueryRow("INSERT INTO userinfo(name, age, gender, resume, education, about, email) VALUES($1,$2,$3,$4,$5,$6,$7) returning id;",
+			user.Name, user.Age, user.Gender, user.Resume, strings.Join(user.Education, ","), user.About, user.Name + "@yahoo.com").Scan(&lastInsertId)
+		if err != nil {
+			fmt.Println("Unable to insert userinfo into db. Error message", err.Error())
+			c.JSON(http.StatusServiceUnavailable, err.Error())
+			return
+		}
+
+		fmt.Println("last inserted id =", lastInsertId)
+		// return a pointer to the updated users list
+		c.JSON(http.StatusOK, &user)
+	} else {
+		c.JSON(http.StatusUnprocessableEntity, errors.New("unable to find appropriate user keys"))
+	}
 }
 

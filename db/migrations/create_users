@@ -1,0 +1,14 @@
+SET timezone = 'America/Los_Angeles';
+CREATE TABLE userinfo
+    (
+        id serial primary key,
+        name character varying(100) NOT NULL,
+        email character varying(100) NOT NULL,
+        age integer NOT NULL,
+        gender character varying(100) NOT NULL,
+        resume character varying(100) NOT NULL,
+        education character varying(100) NOT NULL,
+        about character varying(500) NOT NULL,
+        Created timestamp not null default CURRENT_TIMESTAMP
+    )
+    WITH (OIDS=FALSE);
