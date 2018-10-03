@@ -9,6 +9,7 @@ CREATE TABLE userinfo
         resume character varying(100) NOT NULL,
         education character varying(100) NOT NULL,
         about character varying(500) NOT NULL,
-        Created timestamp not null default CURRENT_TIMESTAMP
+        admin boolean default false,
+        created timestamp not null default CURRENT_TIMESTAMP
     )
     WITH (OIDS=FALSE);

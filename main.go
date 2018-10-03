@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 )
 
 type Response struct {
@@ -49,7 +50,14 @@ var jwtMiddleWare *jwtmiddleware.JWTMiddleware
 
 const DBName = "edatafarm"
 
-var db *sql.DB
+type DBType struct {
+	DB *sql.DB
+}
+
+var (
+	dbOnce sync.Once
+	DBInstance *DBType
+)
 
 func main() {
 	jwtMiddleware := jwtmiddleware.New(jwtmiddleware.Options{
@@ -78,6 +86,9 @@ func main() {
 	})
 
 	jwtMiddleWare = jwtMiddleware
+
+	// Initialize the DBInstance singleton
+	initDB()
 
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
@@ -146,6 +157,20 @@ func authMiddleware() gin.HandlerFunc {
 	}
 }
 
+// Initiaize the DBInstance singleton for server connections
+func initDB() {
+	dbOnce.Do(func () {
+		dbinfo := fmt.Sprintf("dbname=%s sslmode=disable", DBName)
+		db, err := sql.Open("postgres", dbinfo)
+
+		if err != nil {
+			log.Fatalln("Failed to open connection to db: ", err.Error())
+		}
+
+		DBInstance = &DBType{DB: db}
+	})
+}
+
 // UserHandler retrieves a list of available users
 func UserHandler(c *gin.Context) {
   c.Header("Content-Type", "application/json")
@@ -159,15 +184,9 @@ func CreateUser(c *gin.Context) {
 	c.Bind(&user)
 
 	if user.Name != "" && user.Resume != "" {
-		dbinfo := fmt.Sprintf("dbname=%s sslmode=disable", DBName)
-		db, err := sql.Open("postgres", dbinfo)
-		if err != nil {
-			log.Fatalln("Failed to open connection to db: ", err.Error())
-		}
-		defer db.Close()
 
 		var lastInsertId int
-		err = db.QueryRow("INSERT INTO userinfo(name, age, gender, resume, education, about, email) VALUES($1,$2,$3,$4,$5,$6,$7) returning id;",
+		err := DBInstance.DB.QueryRow("INSERT INTO userinfo(name, age, gender, resume, education, about, email) VALUES($1,$2,$3,$4,$5,$6,$7) returning id;",
 			user.Name, user.Age, user.Gender, user.Resume, strings.Join(user.Education, ","), user.About, user.Email).Scan(&lastInsertId)
 		if err != nil {
 			fmt.Println("Unable to insert userinfo into db. Error message", err.Error())
