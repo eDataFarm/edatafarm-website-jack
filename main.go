@@ -13,6 +13,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -45,6 +47,18 @@ type User struct {
 	Education 	[]string	`db:"education" form:"education[]"`
 	About 		string 		`db:"about" form:"about" binding:"required"`
 }
+
+// Job contains information about a single job
+type Job struct {
+	Id			int
+	Title 		string 		`db:"title" form:"title" binding:"required"`
+	Description string 		`db:"about" form:"about" binding:"required"`
+	ExpiresAt   string		`db:"expires_at" form:"expiresAt" binding:"required"`
+	Applicants 	int
+}
+
+// Create an empty list of jobs
+var jobs []*Job
 
 var jwtMiddleWare *jwtmiddleware.JWTMiddleware
 
@@ -90,6 +104,9 @@ func main() {
 	// Initialize the DBInstance singleton
 	initDB()
 
+	// Initialize the jobs array
+	jobs = getJobs()
+
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
 
@@ -104,8 +121,11 @@ func main() {
 				"message": "pong",
 			})
 		})
-		api.GET("/users", authMiddleware(), UserHandler)
+		api.GET("/users/:email", authMiddleware(), UserHandler)
+		api.GET("/users", authMiddleware(), UsersHandler)
 		api.POST("/users", authMiddleware(), CreateUser)
+		api.GET("/jobs", authMiddleware(), JobsHandler)
+		api.POST("/jobs/apply/:jobID", authMiddleware(), ApplyJob)
 	}
 
 	// Start and run the server
@@ -171,11 +191,66 @@ func initDB() {
 	})
 }
 
-// UserHandler retrieves a list of available users
+// UsersHandler retrieves a list of available users
+func UsersHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+	users := make([]*User, 0, 50)
+
+	fmt.Println("Querying Users")
+	rows, err := DBInstance.DB.Query("SELECT id, name, email, age, gender, resume, education, about FROM userinfo")
+	if err != nil {
+		fmt.Println("Unable to query userinfo from db. Error message", err.Error())
+		c.JSON(http.StatusServiceUnavailable, err.Error())
+		return
+	}
+
+	for rows.Next() {
+		user := new(User)
+		var education string
+		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.Age, &user.Gender, &user.Resume, &education, &user.About)
+		if err != nil {
+			fmt.Println("Unable to scan userinfo from db. Error message", err.Error())
+			c.JSON(http.StatusServiceUnavailable, err.Error())
+			return
+		}
+
+		user.Education = strings.Split(education, ",")
+		users = append(users, user)
+	}
+
+	c.JSON(http.StatusOK, users)
+}
+
+// UserHandler retrieves a user
 func UserHandler(c *gin.Context) {
-  c.Header("Content-Type", "application/json")
-  users := make([]string, 0, 50)
-  c.JSON(http.StatusOK, users)
+	email := c.Param("email")
+
+	if m, err := regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, email); !m {
+		fmt.Println("Please provide a valid email address")
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	c.Header("Content-Type", "application/json")
+
+	fmt.Println("Querying User")
+	user := new(User)
+	var education string
+	err := DBInstance.DB.QueryRow("SELECT id, name, email, age, gender, resume, education, about FROM userinfo").
+		Scan(&user.Id, &user.Name, &user.Email, &user.Age, &user.Gender, &user.Resume, &education, &user.About)
+	if err != nil {
+		fmt.Println("Unable to query userinfo from db. Error message", err.Error())
+		c.JSON(http.StatusServiceUnavailable, err.Error())
+		return
+	}
+
+	if user.Email == "" {
+		// User email is invalid
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+
+	user.Education = strings.Split(education, ",")
+	c.JSON(http.StatusOK, user)
 }
 
 // CreateUser creates a new user
@@ -202,3 +277,51 @@ func CreateUser(c *gin.Context) {
 	}
 }
 
+func getJobs() []*Job {
+	jobs := make([]*Job, 0, 50)
+
+	fmt.Println("Querying Jobs")
+	rows, err := DBInstance.DB.Query("SELECT id, title, description, expires_at FROM jobs")
+	if err != nil {
+		fmt.Println("Unable to query jobs from db. Error message", err.Error())
+		log.Fatalf("could not get jobs: %+v", err)
+	}
+
+	for rows.Next() {
+		job := new(Job)
+		err = rows.Scan(&job.Id, &job.Title, &job.Description, &job.ExpiresAt)
+		if err != nil {
+			fmt.Println("Unable to scan job from db. Error message", err.Error())
+			log.Fatalf("could not get job: %+v", err)
+		}
+
+		jobs = append(jobs, job)
+	}
+
+	return jobs
+}
+
+// JobsHandler retrieves a list of available jobs
+func JobsHandler(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+
+	jobs = getJobs()
+
+	c.JSON(http.StatusOK, jobs)
+}
+
+func ApplyJob(c *gin.Context) {
+	// Check job ID is valid
+	if jobID, err := strconv.Atoi(c.Param("jobID")); err == nil {
+		// find job and increment likes
+		for i := 0; i < len(jobs); i++ {
+			if jobs[i].Id == jobID {
+				jobs[i].Applicants = jobs[i].Applicants + 1
+			}
+		}
+		c.JSON(http.StatusOK, &jobs)
+	} else {
+		// the jobs ID is invalid
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+}

@@ -1,0 +1,9 @@
+CREATE TABLE jobs
+    (
+        id serial primary key,
+        title character varying(100) NOT NULL,
+        description character varying(500) NOT NULL,
+        expires_at timestamp not null default CURRENT_TIMESTAMP,
+        created timestamp not null default CURRENT_TIMESTAMP
+    )
+    WITH (OIDS=FALSE);
