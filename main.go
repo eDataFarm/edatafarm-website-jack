@@ -47,6 +47,7 @@ type User struct {
 	Resume 		string 		`db:"resume" form:"resume" binding:"required"`
 	Education 	[]string	`db:"education" form:"education[]"`
 	About 		string 		`db:"about" form:"about" binding:"required"`
+	Admin		bool		`db:"admin" form:"admin"`
 }
 
 // Job contains information about a single job
@@ -235,6 +236,12 @@ func UsersHandler(c *gin.Context) {
 // UserHandler retrieves a user
 func UserHandler(c *gin.Context) {
 	email := c.Param("email")
+	user := new(User)
+
+	if email == "null" {
+		c.JSON(http.StatusOK, user)
+		return
+	}
 
 	if m, err := regexp.MatchString(`^([\w\.\_]{2,10})@(\w{1,}).([a-z]{2,4})$`, email); !m {
 		fmt.Println("Please provide a valid email address")
@@ -245,11 +252,10 @@ func UserHandler(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 
 	fmt.Println("Querying User")
-	user := new(User)
 	var education string
-	queryUser := fmt.Sprintf("SELECT id, name, email, age, gender, resume, education, about FROM userinfo where email = '%s';", email)
+	queryUser := fmt.Sprintf("SELECT id, name, email, age, gender, resume, education, about, admin FROM userinfo where email = '%s';", email)
 	err := DBInstance.DB.QueryRow(queryUser).
-		Scan(&user.Id, &user.Name, &user.Email, &user.Age, &user.Gender, &user.Resume, &education, &user.About)
+		Scan(&user.Id, &user.Name, &user.Email, &user.Age, &user.Gender, &user.Resume, &education, &user.About, &user.Admin)
 	if err != nil {
 		fmt.Println("Unable to query userinfo from db. Error message", err.Error())
 		c.JSON(http.StatusServiceUnavailable, err.Error())
