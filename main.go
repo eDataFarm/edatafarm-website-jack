@@ -122,13 +122,13 @@ func main() {
 				"message": "pong",
 			})
 		})
-		api.GET("/users/:email", authMiddleware(), UserHandler)
-		api.GET("/users", authMiddleware(), UsersHandler)
-		api.GET("/applicants/:jobID", authMiddleware(), UsersHandler)
-		api.POST("/users", authMiddleware(), CreateUser)
-		api.GET("/jobs", authMiddleware(), JobsHandler)
-		api.POST("/jobs", authMiddleware(), CreateJob)
-		api.POST("/jobs/apply/:jobID", authMiddleware(), ApplyJob)
+		api.GET("/users/:email", UserHandler)
+		api.GET("/users", UsersHandler)
+		api.GET("/applicants/:jobID", UsersHandler)
+		api.POST("/users", CreateUser)
+		api.GET("/jobs", JobsHandler)
+		api.POST("/jobs", CreateJob)
+		api.POST("/jobs/apply/:jobID", ApplyJob)
 	}
 
 	// Start and run the server
@@ -292,8 +292,8 @@ func getJobs() []*Job {
 	jobs := make([]*Job, 0, 50)
 
 	fmt.Println("Querying Jobs")
-	queryJobs := fmt.Sprintf("SELECT id, title, description, applicants, expires_at FROM jobs where expires_at > '%s'", time.Now().Format("2006-01-02T15:04:05-0700"))
-	log.Println("Query", queryJobs)
+	queryJobs := fmt.Sprintf("SELECT id, title, description, applicants, expires_at FROM jobs where expires_at > '%s'",
+		time.Now().Format("2006-01-02T15:04:05-0700"))
 	rows, err := DBInstance.DB.Query(queryJobs)
 	if err != nil {
 		fmt.Println("Unable to query jobs from db. Error message", err.Error())
