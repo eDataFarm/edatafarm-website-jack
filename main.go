@@ -124,8 +124,10 @@ func main() {
 		})
 		api.GET("/users/:email", authMiddleware(), UserHandler)
 		api.GET("/users", authMiddleware(), UsersHandler)
+		api.GET("/applicants/:jobID", authMiddleware(), UsersHandler)
 		api.POST("/users", authMiddleware(), CreateUser)
 		api.GET("/jobs", authMiddleware(), JobsHandler)
+		api.POST("/jobs", authMiddleware(), CreateJob)
 		api.POST("/jobs/apply/:jobID", authMiddleware(), ApplyJob)
 	}
 
@@ -198,7 +200,15 @@ func UsersHandler(c *gin.Context) {
 	users := make([]*User, 0, 50)
 
 	fmt.Println("Querying Users")
-	rows, err := DBInstance.DB.Query("SELECT id, name, email, age, gender, resume, education, about FROM userinfo")
+	queryUser := "SELECT id, name, email, age, gender, resume, education, about FROM userinfo"
+
+	jobID := c.Param("jobID")
+
+	if jobID != "" {
+		queryUser += fmt.Sprintf(" where id in(SELECT user_id from user_job where job_id = %s);", jobID)
+	}
+
+	rows, err := DBInstance.DB.Query(queryUser)
 	if err != nil {
 		fmt.Println("Unable to query userinfo from db. Error message", err.Error())
 		c.JSON(http.StatusServiceUnavailable, err.Error())
@@ -261,7 +271,6 @@ func CreateUser(c *gin.Context) {
 	c.Bind(&user)
 
 	if user.Name != "" && user.Resume != "" {
-
 		var lastInsertId int
 		err := DBInstance.DB.QueryRow("INSERT INTO userinfo(name, age, gender, resume, education, about, email) VALUES($1,$2,$3,$4,$5,$6,$7) returning id;",
 			user.Name, user.Age, user.Gender, user.Resume, strings.Join(user.Education, ","), user.About, user.Email).Scan(&lastInsertId)
@@ -272,7 +281,7 @@ func CreateUser(c *gin.Context) {
 		}
 
 		fmt.Println("last inserted id =", lastInsertId)
-		// return a pointer to the updated users list
+		// return a pointer to the new user
 		c.JSON(http.StatusOK, &user)
 	} else {
 		c.JSON(http.StatusUnprocessableEntity, errors.New("unable to find appropriate user keys"))
@@ -312,6 +321,29 @@ func JobsHandler(c *gin.Context) {
 	jobs = getJobs()
 
 	c.JSON(http.StatusOK, jobs)
+}
+
+// CreateJob creates a new job
+func CreateJob(c *gin.Context) {
+	job:= Job{}
+	c.Bind(&job)
+
+	if job.Title != "" && job.Description != "" {
+		var lastInsertId int
+		err := DBInstance.DB.QueryRow("INSERT INTO jobinfo(title, description) VALUES($1,$2) returning id;",
+			job.Title, job.Description).Scan(&lastInsertId)
+		if err != nil {
+			fmt.Println("Unable to insert job into db. Error message", err.Error())
+			c.JSON(http.StatusServiceUnavailable, err.Error())
+			return
+		}
+
+		fmt.Println("last inserted id =", lastInsertId)
+		// return a pointer to the new job
+		c.JSON(http.StatusOK, &job)
+	} else {
+		c.JSON(http.StatusUnprocessableEntity, errors.New("unable to find appropriate job keys"))
+	}
 }
 
 func ApplyJob(c *gin.Context) {
