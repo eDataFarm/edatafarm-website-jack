@@ -48,7 +48,6 @@ class Jobs extends React.Component {
 
     serverRequest() {
         $.get("http://localhost:3000/api/jobs", res => {
-            console.log("Res", res);
             this.setState({
                 jobs: res
             });
@@ -60,6 +59,13 @@ class Jobs extends React.Component {
     }
 
     render() {
+        if (this.state.jobs.length === 0) {
+            return (
+                <div className="container">
+                    <h2>There are no open positions at the moment. Please check again later.</h2>
+                </div>
+            );
+        }
         return (
             <div className="container">
                 <h2>Jobs</h2>
@@ -93,9 +99,10 @@ class Job extends React.Component {
     }
 
     serverRequest(job) {
+        let email = localStorage.getItem("email");
         $.post(
             "http://localhost:3000/api/jobs/apply/" + job.Id,
-            { applied: 1 },
+            { applied: 1 , email: email},
             res => {
                 this.setState({ applied: "Applied!", jobs: res });
                 this.props.jobs = res;
@@ -115,7 +122,7 @@ class Job extends React.Component {
                     <div className="panel-footer">
                         {this.props.job.Applied} Apply &nbsp;
                         <a onClick={this.apply} className="btn btn-default">
-                            <span className="glyphicon glyphicon-thumbs-up" />
+                            <span className="glyphicon glyphicon-pencil" />
                         </a>
                     </div>
                 </div>

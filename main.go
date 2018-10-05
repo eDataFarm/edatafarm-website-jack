@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 )
 
 type Response struct {
@@ -51,10 +52,10 @@ type User struct {
 // Job contains information about a single job
 type Job struct {
 	Id			int
-	Title 		string 		`db:"title" form:"title" binding:"required"`
-	Description string 		`db:"about" form:"about" binding:"required"`
-	ExpiresAt   string		`db:"expires_at" form:"expiresAt" binding:"required"`
-	Applicants 	int
+	Title		string		`db:"title" form:"title" binding:"required"`
+	Description	string 		`db:"about" form:"about" binding:"required"`
+	ExpiresAt	string		`db:"expires_at" form:"expiresAt" binding:"required"`
+	Applicants	int			`db:"applicants" form:"applicants" binding:"required"`
 }
 
 // Create an empty list of jobs
@@ -236,7 +237,8 @@ func UserHandler(c *gin.Context) {
 	fmt.Println("Querying User")
 	user := new(User)
 	var education string
-	err := DBInstance.DB.QueryRow("SELECT id, name, email, age, gender, resume, education, about FROM userinfo").
+	queryUser := fmt.Sprintf("SELECT id, name, email, age, gender, resume, education, about FROM userinfo where email = '%s';", email)
+	err := DBInstance.DB.QueryRow(queryUser).
 		Scan(&user.Id, &user.Name, &user.Email, &user.Age, &user.Gender, &user.Resume, &education, &user.About)
 	if err != nil {
 		fmt.Println("Unable to query userinfo from db. Error message", err.Error())
@@ -281,7 +283,9 @@ func getJobs() []*Job {
 	jobs := make([]*Job, 0, 50)
 
 	fmt.Println("Querying Jobs")
-	rows, err := DBInstance.DB.Query("SELECT id, title, description, expires_at FROM jobs")
+	queryJobs := fmt.Sprintf("SELECT id, title, description, applicants, expires_at FROM jobs where expires_at > '%s'", time.Now().Format("2006-01-02T15:04:05-0700"))
+	log.Println("Query", queryJobs)
+	rows, err := DBInstance.DB.Query(queryJobs)
 	if err != nil {
 		fmt.Println("Unable to query jobs from db. Error message", err.Error())
 		log.Fatalf("could not get jobs: %+v", err)
@@ -289,7 +293,7 @@ func getJobs() []*Job {
 
 	for rows.Next() {
 		job := new(Job)
-		err = rows.Scan(&job.Id, &job.Title, &job.Description, &job.ExpiresAt)
+		err = rows.Scan(&job.Id, &job.Title, &job.Description, &job.Applicants, &job.ExpiresAt)
 		if err != nil {
 			fmt.Println("Unable to scan job from db. Error message", err.Error())
 			log.Fatalf("could not get job: %+v", err)
@@ -317,6 +321,27 @@ func ApplyJob(c *gin.Context) {
 		for i := 0; i < len(jobs); i++ {
 			if jobs[i].Id == jobID {
 				jobs[i].Applicants = jobs[i].Applicants + 1
+
+				// Update join table with user
+				email := c.Request.FormValue("email")
+				var user_id sql.NullInt64
+				queryUser := fmt.Sprintf("SELECT id FROM userinfo where email = '%s';", email)
+				err := DBInstance.DB.QueryRow(queryUser).Scan(&user_id)
+				if err != nil {
+					fmt.Println("Unable to query userinfo from db. Error message", err.Error())
+					c.JSON(http.StatusServiceUnavailable, err.Error())
+					return
+				}
+
+				result := DBInstance.DB.QueryRow("INSERT INTO user_job(user_id, job_id) VALUES($1,$2);",
+					user_id.Int64, jobID)
+				if result == nil {
+					fmt.Println("Unable to insert into user_job in db. Error message", err.Error())
+					c.JSON(http.StatusServiceUnavailable, err.Error())
+					return
+				}
+
+				break
 			}
 		}
 		c.JSON(http.StatusOK, &jobs)

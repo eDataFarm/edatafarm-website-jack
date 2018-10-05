@@ -4,6 +4,13 @@ CREATE TABLE jobs
         title character varying(100) NOT NULL,
         description character varying(500) NOT NULL,
         expires_at timestamp not null default CURRENT_TIMESTAMP,
+        applicants integer NOT NULL default 0,
         created timestamp not null default CURRENT_TIMESTAMP
     )
     WITH (OIDS=FALSE);
+
+CREATE TABLE user_job
+    (
+        user_id integer REFERENCES userinfo(id),
+        job_id integer REFERENCES jobs(id)
+    );
