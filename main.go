@@ -54,9 +54,9 @@ type User struct {
 type Job struct {
 	Id			int
 	Title		string		`db:"title" form:"title" binding:"required"`
-	Description	string 		`db:"about" form:"about" binding:"required"`
 	ExpiresAt	string		`db:"expires_at" form:"expiresAt" binding:"required"`
-	Applicants	int			`db:"applicants" form:"applicants" binding:"required"`
+	Description	string 		`db:"description" form:"description" binding:"required"`
+	Applicants	int    		`db:"applicants" form:"applicants" binding:"required"`
 }
 
 // Create an empty list of jobs
@@ -335,9 +335,17 @@ func CreateJob(c *gin.Context) {
 	c.Bind(&job)
 
 	if job.Title != "" && job.Description != "" {
+		weeksToAdd, err := strconv.Atoi(job.ExpiresAt)
+		if err != nil {
+			c.JSON(http.StatusUnprocessableEntity, errors.New("unable to convert expiresAt to int"))
+			return
+		}
+
+		expiresAt := time.Now().AddDate(0, 0, 7 * weeksToAdd)
+
 		var lastInsertId int
-		err := DBInstance.DB.QueryRow("INSERT INTO jobinfo(title, description) VALUES($1,$2) returning id;",
-			job.Title, job.Description).Scan(&lastInsertId)
+		err = DBInstance.DB.QueryRow("INSERT INTO jobs(title, description, expires_at) VALUES($1,$2,$3) returning id;",
+			job.Title, job.Description, expiresAt.Format("2006-01-02T15:04:05-0700")).Scan(&lastInsertId)
 		if err != nil {
 			fmt.Println("Unable to insert job into db. Error message", err.Error())
 			c.JSON(http.StatusServiceUnavailable, err.Error())

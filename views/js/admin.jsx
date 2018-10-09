@@ -68,7 +68,7 @@ class JobOpenings extends React.Component {
         }
         return (
             <div className="container">
-                <a href="admin/new.html" className="btn btn-primary btn-lg btn-block pull-right new-job"><span>New Job</span></a>
+                <a href="new.html" className="btn btn-primary btn-lg btn-block pull-right new-job"><span>New Job</span></a>
                 <h2>Jobs</h2>
                 <div className="row">
                     <div className="container">

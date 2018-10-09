@@ -19,60 +19,42 @@ class FormContainer extends React.Component {
 
         this.handleTextArea = this.handleTextArea.bind(this);
         this.handleAge = this.handleAge.bind(this);
-        this.handleFullName = this.handleFullName.bind(this);
+        this.handleInput = this.handleInput.bind(this);
         this.handleResume = this.handleResume.bind(this);
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleClearForm = this.handleClearForm.bind(this);
         this.handleCheckBox = this.handleCheckBox.bind(this);
-        this.handleInput = this.handleInput.bind(this);
         this.serverRequest = this.serverRequest.bind(this);
   }
 
   /* This lifecycle hook gets executed when the component mounts */
 
-  handleFullName(e) {
-      let value = e.target.value;
-      this.setState( prevState => ({
-          newUser :
-              {...prevState.newUser, name: value}
-      })
-      )
-  }
-
   handleAge(e) {
       let value = e.target.value;
       this.setState( prevState => ({
-          newUser :
-              {...prevState.newUser, age: value}
-      })
+          newUser : {...prevState.newUser, age: value}})
       )
   }
 
-    handleResume(e) {
-        let value = e.target.value;
-        this.setState( prevState => ({
-                newUser :
-                    {...prevState.newUser, resume: value}
-            })
-        )
-    }
+  handleResume(e) {
+      let value = e.target.value;
+      this.setState( prevState => ({
+          newUser : {...prevState.newUser, resume: value}})
+      )
+  }
 
-    handleInput(e) {
+  handleInput(e) {
       let value = e.target.value;
       let name = e.target.name;
       this.setState( prevState => ({
-              newUser :
-                  {...prevState.newUser, [name]: value}
-      })
+          newUser : {...prevState.newUser, [name]: value}})
       )
-    }
+  }
 
   handleTextArea(e) {
       let value = e.target.value;
       this.setState(prevState => ({
-          newUser:
-              {...prevState.newUser, about: value}
-      })
+          newUser: {...prevState.newUser, about: value}})
       )
   }
 
@@ -132,13 +114,13 @@ class FormContainer extends React.Component {
 
   render() {
     return (
-    
+
         <form className="container-fluid" onSubmit={this.handleFormSubmit}>
-       
+
             <Input inputType={'text'}
-                   title= {'Full Name'} 
+                   title= {'Full Name'}
                    name= {'name'}
-                   value={this.state.newUser.name} 
+                   value={this.state.newUser.name}
                    placeholder = {'Enter your name'}
                    handleChange = {this.handleInput}
             /> {/* Name of the user */}
@@ -153,7 +135,7 @@ class FormContainer extends React.Component {
 
             <Select title={'Gender'}
                   name={'gender'}
-                  options = {this.state.genderOptions} 
+                  options = {this.state.genderOptions}
                   value = {this.state.newUser.gender}
                   placeholder = {'Select Gender'}
                   handleChange = {this.handleInput}
@@ -177,10 +159,10 @@ class FormContainer extends React.Component {
             <TextArea
                 title={'Tells us about yourself.'}
                 rows={10}
+                name={'about'}
                 value={this.state.newUser.about}
-                name={'currentPetInfo'}
-                handleChange={this.handleTextArea}
                 placeholder={'Describe your past experience and skills'}
+                handleChange={this.handleTextArea}
             />{/* About you */}
 
             <Button

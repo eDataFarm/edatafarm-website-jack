@@ -118,7 +118,10 @@ class Job extends React.Component {
                         #{this.props.job.Id}{" "}
                         <span className="pull-right">{this.state.applied}</span>
                     </div>
-                    <div className="panel-body">{this.props.job.Description}</div>
+                    <div className="panel-body">
+                        <div><b>{this.props.job.Title}</b></div>
+                        <div>{this.props.job.Description}</div>
+                    </div>
                     <div className="panel-footer">
                         {this.props.job.Applied} Apply &nbsp;
                         <a onClick={this.apply} className="btn btn-default">
