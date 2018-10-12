@@ -10,7 +10,7 @@ class NewJob extends React.Component {
 
     serverRequest() {
         let email = localStorage.getItem("email");
-        $.get("http://localhost:3000/api/users/" + email, res => {
+        $.get("http://localhost:3000/api/v1/users/" + email, res => {
             if (res.Admin === true) {
                 this.setState({
                     admin: true

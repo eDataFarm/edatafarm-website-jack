@@ -56,7 +56,7 @@ type Job struct {
 	Title		string		`db:"title" form:"title" binding:"required"`
 	ExpiresAt	string		`db:"expires_at" form:"expiresAt" binding:"required"`
 	Description	string 		`db:"description" form:"description" binding:"required"`
-	Applicants	int    		`db:"applicants" form:"applicants" binding:"required"`
+	Applicants	int    		`db:"applicants" form:"applicants"`
 }
 
 // Create an empty list of jobs
@@ -116,7 +116,7 @@ func main() {
 	router.Use(static.Serve("/", static.LocalFile("./views", true)))
 
 	// Setup route group for the API
-	api := router.Group("/api")
+	api := router.Group("/api/v1")
 	{
 		api.GET("/", func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
@@ -192,6 +192,8 @@ func initDB() {
 		}
 
 		DBInstance = &DBType{DB: db}
+
+		// TODO: Migrate the schema
 	})
 }
 
@@ -274,19 +276,26 @@ func UserHandler(c *gin.Context) {
 // CreateUser creates a new user
 func CreateUser(c *gin.Context) {
 	user:= User{}
-	c.Bind(&user)
+
+	if err := c.Bind(&user); err != nil {
+		fmt.Println("json decoding:", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  "json decoding : " + err.Error(),
+			"status": http.StatusBadRequest,
+		})
+		return
+	}
 
 	if user.Name != "" && user.Resume != "" {
-		var lastInsertId int
 		err := DBInstance.DB.QueryRow("INSERT INTO userinfo(name, age, gender, resume, education, about, email) VALUES($1,$2,$3,$4,$5,$6,$7) returning id;",
-			user.Name, user.Age, user.Gender, user.Resume, strings.Join(user.Education, ","), user.About, user.Email).Scan(&lastInsertId)
+			user.Name, user.Age, user.Gender, user.Resume, strings.Join(user.Education, ","), user.About, user.Email).Scan(&user.Id)
 		if err != nil {
 			fmt.Println("Unable to insert userinfo into db. Error message", err.Error())
 			c.JSON(http.StatusServiceUnavailable, err.Error())
 			return
 		}
 
-		fmt.Println("last inserted id =", lastInsertId)
+		fmt.Println("last inserted id =", user.Id)
 		// return a pointer to the new user
 		c.JSON(http.StatusOK, &user)
 	} else {
@@ -332,7 +341,15 @@ func JobsHandler(c *gin.Context) {
 // CreateJob creates a new job
 func CreateJob(c *gin.Context) {
 	job:= Job{}
-	c.Bind(&job)
+
+	if err := c.Bind(&job); err != nil {
+		fmt.Println("json decoding:", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  "json decoding : " + err.Error(),
+			"status": http.StatusBadRequest,
+		})
+		return
+	}
 
 	if job.Title != "" && job.Description != "" {
 		weeksToAdd, err := strconv.Atoi(job.ExpiresAt)
@@ -343,16 +360,15 @@ func CreateJob(c *gin.Context) {
 
 		expiresAt := time.Now().AddDate(0, 0, 7 * weeksToAdd)
 
-		var lastInsertId int
 		err = DBInstance.DB.QueryRow("INSERT INTO jobs(title, description, expires_at) VALUES($1,$2,$3) returning id;",
-			job.Title, job.Description, expiresAt.Format("2006-01-02T15:04:05-0700")).Scan(&lastInsertId)
+			job.Title, job.Description, expiresAt.Format("2006-01-02T15:04:05-0700")).Scan(&job.Id)
 		if err != nil {
 			fmt.Println("Unable to insert job into db. Error message", err.Error())
 			c.JSON(http.StatusServiceUnavailable, err.Error())
 			return
 		}
 
-		fmt.Println("last inserted id =", lastInsertId)
+		fmt.Println("last inserted id =", job.Id)
 		// return a pointer to the new job
 		c.JSON(http.StatusOK, &job)
 	} else {

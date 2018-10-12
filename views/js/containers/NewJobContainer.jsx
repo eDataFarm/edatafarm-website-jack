@@ -8,7 +8,7 @@ class NewJobContainer extends React.Component {
                 expiresAt: '',
                 description: ''
             },
-            jobs: []
+            requestSuccessful: false
         }
 
         this.handleTitle = this.handleTitle.bind(this);
@@ -47,12 +47,13 @@ class NewJobContainer extends React.Component {
 
   serverRequest(jobData) {
       $.post(
-          "http://localhost:3000/api/jobs",
+          "http://localhost:3000/api/v1/jobs",
           jobData,
               response => {
               // console.log("res... ", response);
-              this.setState({ jobs: response });
-              this.props.jobs = response;
+              if (response) {
+                  this.setState({ requestSuccessful: true });
+              }
           });
   }
 
@@ -60,6 +61,10 @@ class NewJobContainer extends React.Component {
       e.preventDefault();
       let jobData = this.state.newJob;
       this.serverRequest(jobData);
+      // console.log("Bool", this.state.requestSuccessful);
+      if(this.state.requestSuccessful){
+          this.props.history.push('/admin')
+      }
   }
 
   handleClearForm(e) {
