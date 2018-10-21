@@ -5,7 +5,7 @@ class NewJobContainer extends React.Component {
         this.state = {
             newJob: {
                 title: '',
-                expiresAt: '',
+                expiration: '',
                 description: ''
             },
             requestSuccessful: false
@@ -32,7 +32,7 @@ class NewJobContainer extends React.Component {
   handleExpiresAt(e) {
       let value = e.target.value;
       this.setState( prevState => ({
-          newJob : {...prevState.newJob, expiresAt: value}
+          newJob : {...prevState.newJob, expiration: value}
       })
       )
   }
@@ -47,13 +47,12 @@ class NewJobContainer extends React.Component {
 
   serverRequest(jobData) {
       $.post(
-          "http://localhost:3000/api/v1/jobs",
-          jobData,
-              response => {
+          "http://localhost:3000/api/v1/jobs", jobData,
+          response => {
               // console.log("res... ", response);
-              if (response) {
+              if (response !== "") {
                   this.setState({ requestSuccessful: true });
-              }
+            }
           });
   }
 
@@ -65,6 +64,7 @@ class NewJobContainer extends React.Component {
       if(this.state.requestSuccessful){
           this.props.history.push('/admin')
       }
+      return <NewJob />
   }
 
   handleClearForm(e) {
@@ -72,7 +72,7 @@ class NewJobContainer extends React.Component {
       this.setState({
           newJob: {
               title: '',
-              expiresAt: '',
+              expiration: '',
               description: ''
           },
       })
@@ -92,9 +92,9 @@ class NewJobContainer extends React.Component {
             /> {/* Title of the job */}
 
             <Input inputType={'number'}
-                   name={'expiresAt'}
+                   name={'expiration'}
                    title= {'Expires after'}
-                   value={this.state.newJob.expiresAt}
+                   value={this.state.newJob.expiration}
                    placeholder = {'Weeks'}
                    handleChange={this.handleExpiresAt}
             /> {/* Expires after */}

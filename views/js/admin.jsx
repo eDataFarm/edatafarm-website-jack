@@ -62,7 +62,9 @@ class JobOpenings extends React.Component {
         if (this.state.jobs.length === 0) {
             return (
                 <div className="container">
-                    <h2>There are no open positions at the moment. Please add new jobs.</h2>
+                    <a href="new.html" className="btn btn-primary btn-lg btn-block pull-right new-job"><span>New Job</span></a>
+                    <h2>There are no open positions at the moment.</h2>
+                    <h2>Please add new jobs.</h2>
                 </div>
             );
         }
@@ -120,10 +122,18 @@ class JobListing extends React.Component {
                         <div>{this.props.job.Description}</div>
                     </div>
                     <div className="panel-footer">
-                        {this.props.job.Applicants} Applications &nbsp;
-                        <a onClick={this.applicants} className="btn btn-default">
-                            <span className="glyphicon glyphicon-user" />
-                        </a>
+                        <div className="pull-right">
+                            Edit &nbsp;
+                            <a onClick={this.editJob} className="btn btn-default">
+                                <span className="glyphicon glyphicon-pencil" />
+                            </a>
+                        </div>
+                        <div>
+                            <a href={"../users/index.html?JobID=" + this.props.job.Id} >
+                                {this.props.job.Applicants}
+                            </a>
+                            &nbsp; Applications
+                        </div>
                     </div>
                 </div>
             </div>

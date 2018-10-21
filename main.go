@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/auth0/go-jwt-middleware"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/fatih/structs"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -42,11 +43,18 @@ type User struct {
 	Id			int
 	Name 		string 		`db:"name" form:"name" binding:"required"`
 	Email 		string 		`db:"email" form:"email" binding:"required"`
-	Age  		int 		`db:"age" form:"age" binding:"required"`
-	Gender 		string 		`db:"gender" form:"gender" binding:"required"`
+	Phone  		string 		`db:"phone" form:"phone" binding:"required"`
+	Position 	[]string 	`db:"position" form:"position[]" binding:"required"`
+	Languages 	string 		`db:"languages" form:"languages"`
+	Referrer  	string 		`db:"referrer" form:"referrer"`
 	Resume 		string 		`db:"resume" form:"resume" binding:"required"`
 	Education 	[]string	`db:"education" form:"education[]"`
+	Major  		string 		`db:"major" form:"major"`
 	About 		string 		`db:"about" form:"about" binding:"required"`
+	Skills  	string 		`db:"skills" form:"skills" binding:"required"`
+	Ref1  		string 		`db:"ref1" form:"ref1" binding:"required"`
+	Ref2  		string 		`db:"ref2" form:"ref2" binding:"required"`
+	Ref3  		string 		`db:"ref3" form:"ref3" binding:"required"`
 	Admin		bool		`db:"admin" form:"admin"`
 }
 
@@ -54,7 +62,7 @@ type User struct {
 type Job struct {
 	Id			int
 	Title		string		`db:"title" form:"title" binding:"required"`
-	ExpiresAt	string		`db:"expires_at" form:"expiresAt" binding:"required"`
+	Expiration	string		`db:"expiration" form:"expiration" binding:"required"`
 	Description	string 		`db:"description" form:"description" binding:"required"`
 	Applicants	int    		`db:"applicants" form:"applicants"`
 }
@@ -203,31 +211,34 @@ func UsersHandler(c *gin.Context) {
 	users := make([]*User, 0, 50)
 
 	fmt.Println("Querying Users")
-	queryUser := "SELECT id, name, email, age, gender, resume, education, about FROM userinfo"
-
+	targetColumnNames := structs.Names(&User{})
+	whereClause := "email != ''"
 	jobID := c.Param("jobID")
 
 	if jobID != "" {
-		queryUser += fmt.Sprintf(" where id in(SELECT user_id from user_job where job_id = %s);", jobID)
+		whereClause = fmt.Sprintf("id in(SELECT user_id from user_job where job_id = %s);", jobID)
 	}
 
+	queryUser := buildSelectStatement("userinfo", targetColumnNames, whereClause)
 	rows, err := DBInstance.DB.Query(queryUser)
 	if err != nil {
-		fmt.Println("Unable to query userinfo from db. Error message", err.Error())
+		fmt.Printf("Unable to run '%s' against table userinfo in db. Error message: %s\n", queryUser, err.Error())
 		c.JSON(http.StatusServiceUnavailable, err.Error())
 		return
 	}
 
 	for rows.Next() {
 		user := new(User)
-		var education string
-		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.Age, &user.Gender, &user.Resume, &education, &user.About)
+		var education, position string
+		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &user.Languages, &user.Referrer,
+			&user.Resume, &education, &user.Major, &user.About, &user.Skills, &user.Ref1, &user.Ref2, &user.Ref3, &user.Admin)
 		if err != nil {
 			fmt.Println("Unable to scan userinfo from db. Error message", err.Error())
 			c.JSON(http.StatusServiceUnavailable, err.Error())
 			return
 		}
 
+		user.Position = strings.Split(position, ",")
 		user.Education = strings.Split(education, ",")
 		users = append(users, user)
 	}
@@ -254,21 +265,26 @@ func UserHandler(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 
 	fmt.Println("Querying User")
-	var education string
-	queryUser := fmt.Sprintf("SELECT id, name, email, age, gender, resume, education, about, admin FROM userinfo where email = '%s';", email)
+	var education, position string
+	targetColumnNames := structs.Names(&User{})
+	whereClause := fmt.Sprintf("email = '%s';", email)
+	queryUser := buildSelectStatement("userinfo", targetColumnNames, whereClause)
 	err := DBInstance.DB.QueryRow(queryUser).
-		Scan(&user.Id, &user.Name, &user.Email, &user.Age, &user.Gender, &user.Resume, &education, &user.About, &user.Admin)
-	if err != nil {
-		fmt.Println("Unable to query userinfo from db. Error message", err.Error())
-		c.JSON(http.StatusServiceUnavailable, err.Error())
-		return
-	}
+		Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &user.Languages, &user.Referrer,
+			&user.Resume, &education, &user.Major, &user.About, &user.Skills, &user.Ref1, &user.Ref2, &user.Ref3, &user.Admin)
 
 	if user.Email == "" {
 		// User email is invalid
 		c.AbortWithStatus(http.StatusNotFound)
 	}
 
+	if err != nil {
+		fmt.Printf("Unable to run '%s' against table userinfo in db. Error message: %s\n", queryUser, err.Error())
+		c.JSON(http.StatusServiceUnavailable, err.Error())
+		return
+	}
+
+	user.Position = strings.Split(position, ",")
 	user.Education = strings.Split(education, ",")
 	c.JSON(http.StatusOK, user)
 }
@@ -287,10 +303,14 @@ func CreateUser(c *gin.Context) {
 	}
 
 	if user.Name != "" && user.Resume != "" {
-		err := DBInstance.DB.QueryRow("INSERT INTO userinfo(name, age, gender, resume, education, about, email) VALUES($1,$2,$3,$4,$5,$6,$7) returning id;",
-			user.Name, user.Age, user.Gender, user.Resume, strings.Join(user.Education, ","), user.About, user.Email).Scan(&user.Id)
+		targetColumnNames := structs.Names(&User{})
+		insertUser := buildInsertStatement("userinfo", targetColumnNames[1:])
+		err := DBInstance.DB.QueryRow(insertUser, user.Name, user.Email, user.Phone,
+			strings.Join(user.Position, ","), user.Languages, user.Referrer, user.Resume,
+			strings.Join(user.Education, ","), user.Major, user.About, user.Skills,
+			user.Ref1, user.Ref2, user.Ref3, false).Scan(&user.Id)
 		if err != nil {
-			fmt.Println("Unable to insert userinfo into db. Error message", err.Error())
+			fmt.Printf("Unable to insert query %s userinfo into db. Error message: %s\n", insertUser, err.Error())
 			c.JSON(http.StatusServiceUnavailable, err.Error())
 			return
 		}
@@ -307,8 +327,9 @@ func getJobs() []*Job {
 	jobs := make([]*Job, 0, 50)
 
 	fmt.Println("Querying Jobs")
-	queryJobs := fmt.Sprintf("SELECT id, title, description, applicants, expires_at FROM jobs where expires_at > '%s'",
-		time.Now().Format("2006-01-02T15:04:05-0700"))
+	targetColumnNames := structs.Names(&Job{})
+	whereClause := fmt.Sprintf("expiration > '%s'", time.Now().Format("2006-01-02T15:04:05-0700"))
+	queryJobs := buildSelectStatement("jobs", targetColumnNames, whereClause)
 	rows, err := DBInstance.DB.Query(queryJobs)
 	if err != nil {
 		fmt.Println("Unable to query jobs from db. Error message", err.Error())
@@ -317,7 +338,7 @@ func getJobs() []*Job {
 
 	for rows.Next() {
 		job := new(Job)
-		err = rows.Scan(&job.Id, &job.Title, &job.Description, &job.Applicants, &job.ExpiresAt)
+		err = rows.Scan(&job.Id, &job.Title, &job.Expiration, &job.Description, &job.Applicants)
 		if err != nil {
 			fmt.Println("Unable to scan job from db. Error message", err.Error())
 			log.Fatalf("could not get job: %+v", err)
@@ -352,16 +373,18 @@ func CreateJob(c *gin.Context) {
 	}
 
 	if job.Title != "" && job.Description != "" {
-		weeksToAdd, err := strconv.Atoi(job.ExpiresAt)
+		weeksToAdd, err := strconv.Atoi(job.Expiration)
 		if err != nil {
-			c.JSON(http.StatusUnprocessableEntity, errors.New("unable to convert expiresAt to int"))
+			c.JSON(http.StatusUnprocessableEntity, errors.New("unable to convert expiration to int"))
 			return
 		}
 
-		expiresAt := time.Now().AddDate(0, 0, 7 * weeksToAdd)
+		expiration := time.Now().AddDate(0, 0, 7 * weeksToAdd)
 
-		err = DBInstance.DB.QueryRow("INSERT INTO jobs(title, description, expires_at) VALUES($1,$2,$3) returning id;",
-			job.Title, job.Description, expiresAt.Format("2006-01-02T15:04:05-0700")).Scan(&job.Id)
+		targetColumnNames := structs.Names(&Job{})
+		insertJob := buildInsertStatement("jobs", targetColumnNames[1:])
+		err = DBInstance.DB.QueryRow(insertJob, job.Title, expiration.Format("2006-01-02T15:04:05-0700"),
+			job.Description, 0).Scan(&job.Id)
 		if err != nil {
 			fmt.Println("Unable to insert job into db. Error message", err.Error())
 			c.JSON(http.StatusServiceUnavailable, err.Error())
@@ -411,4 +434,22 @@ func ApplyJob(c *gin.Context) {
 		// the jobs ID is invalid
 		c.AbortWithStatus(http.StatusNotFound)
 	}
+}
+
+func getValueString(numberOfColumns int) string {
+	values := "$1"
+	for i := 1; i < numberOfColumns; i++ {
+		values = fmt.Sprintf( "%s, $%d", values, i+1)
+	}
+	return values
+}
+
+func buildSelectStatement(targetTableName string, targetColumnNames []string, whereClause string) string {
+	return fmt.Sprintf("SELECT %s from %s WHERE %s;", strings.Join(targetColumnNames, ","),
+		targetTableName, whereClause)
+}
+
+func buildInsertStatement(targetTableName string, targetColumnNames []string) string {
+	return fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s) returning id;",
+		targetTableName, strings.Join(targetColumnNames, ","), getValueString(len(targetColumnNames)))
 }

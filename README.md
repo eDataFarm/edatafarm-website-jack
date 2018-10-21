@@ -9,7 +9,7 @@ This repo contains the code built for [eDataFarm](http://www.edatafarm.com).
 3. Add `http://localhost:3000` to your Allowed Callback, and Allowed Logout URL's in your [Auth0 Management Dashboard](https://manage.auth0.com).
 4. Run `mv .env.sample .env` and update with valid credentials
 5. Source the environment variables - `source .env`
-6. Update dependencies `go get`
+6. Update dependencies `go get ./...`
 7. Install postgresql database `brew install postgresql`
 8. Create the database `createdb edatafarm`
 9. Load the schema for users` psql  edatafarm < db/migrations/create_users`

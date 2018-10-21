@@ -3,7 +3,7 @@ CREATE TABLE jobs
         id serial primary key,
         title character varying(100) NOT NULL,
         description character varying(500) NOT NULL,
-        expires_at timestamp not null default CURRENT_TIMESTAMP,
+        expiration timestamp not null default CURRENT_TIMESTAMP,
         applicants integer NOT NULL default 0,
         created timestamp not null default CURRENT_TIMESTAMP
     )

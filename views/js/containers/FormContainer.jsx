@@ -6,183 +6,264 @@ class FormContainer extends React.Component {
             newUser: {
                 name: '',
                 email: '',
-                age: '',
-                gender: '',
+                phone: '',
+                position: [],
+                languages: '',
+                referrer: '',
                 resume: '',
                 education: [],
-                about: ''
+                major: '',
+                about: '',
+                skills: '',
+                ref1: '',
+                ref2: '',
+                ref3: ''
             },
-            genderOptions: ['Male', 'Female', 'Others'],
-            educationOptions: ['G.E.D', 'Bachelors', 'Masters', 'Other'],
+            positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
+            educationOptions: ['G.E.D.', 'Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
             users: []
         }
 
-        this.handleTextArea = this.handleTextArea.bind(this);
-        this.handleAge = this.handleAge.bind(this);
         this.handleInput = this.handleInput.bind(this);
-        this.handleResume = this.handleResume.bind(this);
+        this.handlePosition = this.handlePosition.bind(this);
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleClearForm = this.handleClearForm.bind(this);
         this.handleCheckBox = this.handleCheckBox.bind(this);
         this.serverRequest = this.serverRequest.bind(this);
-  }
+    }
 
-  /* This lifecycle hook gets executed when the component mounts */
+    /* This lifecycle hook gets executed when the component mounts */
 
-  handleAge(e) {
-      let value = e.target.value;
-      this.setState( prevState => ({
-          newUser : {...prevState.newUser, age: value}})
-      )
-  }
+    handlePosition(e) {
+        const newSelection = e.target.value;
+        let newSelectionArray;
 
-  handleResume(e) {
-      let value = e.target.value;
-      this.setState( prevState => ({
-          newUser : {...prevState.newUser, resume: value}})
-      )
-  }
+        if(this.state.newUser.position.indexOf(newSelection) > -1) {
+            newSelectionArray = this.state.newUser.position.filter(s => s !== newSelection)
+        } else {
+            newSelectionArray = [...this.state.newUser.position, newSelection];
+        }
 
-  handleInput(e) {
-      let value = e.target.value;
-      let name = e.target.name;
-      this.setState( prevState => ({
+        this.setState( prevState => ({
+                newUser:
+                    {...prevState.newUser, position: newSelectionArray }
+            })
+        )
+    }
+
+    handleInput(e) {
+        let value = e.target.value;
+        let name = e.target.name;
+        this.setState( prevState => ({
           newUser : {...prevState.newUser, [name]: value}})
-      )
-  }
+        )
+    }
 
-  handleTextArea(e) {
-      let value = e.target.value;
-      this.setState(prevState => ({
-          newUser: {...prevState.newUser, about: value}})
-      )
-  }
+    handleCheckBox(e) {
+        const newSelection = e.target.value;
+        let newSelectionArray;
 
-  handleCheckBox(e) {
-      const newSelection = e.target.value;
-      let newSelectionArray;
+        if(this.state.newUser.education.indexOf(newSelection) > -1) {
+            newSelectionArray = this.state.newUser.education.filter(s => s !== newSelection)
+        } else {
+            newSelectionArray = [...this.state.newUser.education, newSelection];
+        }
 
-      if(this.state.newUser.education.indexOf(newSelection) > -1) {
-          newSelectionArray = this.state.newUser.education.filter(s => s !== newSelection)
-      } else {
-          newSelectionArray = [...this.state.newUser.education, newSelection];
-      }
-
-      this.setState( prevState => ({
+        this.setState( prevState => ({
               newUser:
                   {...prevState.newUser, education: newSelectionArray }
-      })
-      )
-  }
+        })
+        )
+    }
 
-  serverRequest(userData) {
-      $.post(
-          "http://localhost:3000/api/v1/users",
-          userData,
-              response => {
-              // console.log("res... ", response);
-              this.setState({ users: response });
-              this.props.users = response;
-          });
-  }
+    serverRequest(userData) {
+        $.post(
+            "http://localhost:3000/api/v1/users",
+            userData,
+                response => {
+                // console.log("res... ", response);
+                this.setState({ users: response });
+                this.props.users = response;
+            });
+    }
 
-  handleFormSubmit(e) {
-      e.preventDefault();
-      let email = localStorage.getItem("email");
-      if (email) {
-          this.state.newUser.email = email
-      }
-      let userData = this.state.newUser;
+    handleFormSubmit(e) {
+        e.preventDefault();
+        let email = localStorage.getItem("email");
+        if (email) {
+            this.state.newUser.email = email
+        }
+        let userData = this.state.newUser;
 
-      this.serverRequest(userData);
-  }
+        this.serverRequest(userData);
+    }
 
-  handleClearForm(e) {
-      e.preventDefault();
-      this.setState({
-          newUser: {
-              name: '',
-              email: '',
-              age: '',
-              gender: '',
-              resume: '',
-              education: [],
-              about: ''
-          },
-      })
-  }
+    handleClearForm(e) {
+        e.preventDefault();
+        this.setState({
+            newUser: {
+                name: '',
+                email: '',
+                phone: '',
+                position: [],
+                languages: '',
+                referrer: '',
+                resume: '',
+                education: [],
+                major: '',
+                about: '',
+                ref1: '',
+                ref2: '',
+                ref3: ''
+            },
+        })
+    }
 
-  render() {
-    return (
+    render() {
+        return (
 
-        <form className="container-fluid" onSubmit={this.handleFormSubmit}>
+            <form className="container-fluid" onSubmit={this.handleFormSubmit}>
 
-            <Input inputType={'text'}
-                   title= {'Full Name'}
-                   name= {'name'}
-                   value={this.state.newUser.name}
-                   placeholder = {'Enter your name'}
-                   handleChange = {this.handleInput}
-            /> {/* Name of the user */}
+                <Input inputType={'text'}
+                       title= {'Full Name'}
+                       name= {'name'}
+                       value={this.state.newUser.name}
+                       placeholder = {'Enter your name'}
+                       handleChange = {this.handleInput}
+                /> {/* Name of the user */}
 
-            <Input inputType={'number'}
-                   name={'age'}
-                   title= {'Age'}
-                   value={this.state.newUser.age}
-                   placeholder = {'Enter your age'}
-                   handleChange={this.handleAge}
-            /> {/* Age */}
+                <Input inputType={'text'}
+                       name={'phone'}
+                       title= {'Phone number'}
+                       value={this.state.newUser.phone}
+                       placeholder = {'Enter your phone number'}
+                       handleChange={this.handleInput}
+                /> {/* Phone number */}
 
-            <Select title={'Gender'}
-                  name={'gender'}
-                  options = {this.state.genderOptions}
-                  value = {this.state.newUser.gender}
-                  placeholder = {'Select Gender'}
-                  handleChange = {this.handleInput}
-            /> {/* Age Selection */}
+                <CheckBox  title={'Position(s) you are interested in'}
+                           name={'position'}
+                           options={this.state.positionOptions}
+                           selectedOptions = { this.state.newUser.position}
+                           handleChange={this.handlePosition}
+                /> {/* Position */}
 
-            <CheckBox  title={'Education'}
-                  name={'education'}
-                  options={this.state.educationOptions}
-                  selectedOptions = { this.state.newUser.education}
-                  handleChange={this.handleCheckBox}
-            /> {/* Skill */}
+                <Input inputType={'text'}
+                       title= {'Languages'}
+                       name= {'languages'}
+                       value={this.state.newUser.languages}
+                       placeholder = {'Please list any language(s) other than English you are fluent in'}
+                       handleChange = {this.handleInput}
+                /> {/* Languages */}
 
-            <Input inputType={'text'}
-                   title= {'Resume'}
-                   name= {'resume'}
-                   value={this.state.newUser.resume}
-                   placeholder = {'LinkedIn Profile URL'}
-                   handleChange = {this.handleInput}
-            /> {/* Resume */}
+                <Input inputType={'text'}
+                       title= {'Referrer'}
+                       name= {'referrer'}
+                       value={this.state.newUser.referrer}
+                       placeholder = {'If you were referred , please enter: Name - Phone'}
+                       handleChange = {this.handleInput}
+                /> {/* Referrer */}
 
-            <TextArea
-                title={'Tells us about yourself.'}
-                rows={10}
-                name={'about'}
-                value={this.state.newUser.about}
-                placeholder={'Describe your past experience and skills'}
-                handleChange={this.handleTextArea}
-            />{/* About you */}
+                <CheckBox  title={'Education'}
+                      name={'education'}
+                      options={this.state.educationOptions}
+                      selectedOptions = { this.state.newUser.education}
+                      handleChange={this.handleCheckBox}
+                /> {/* Education */}
 
-            <Button
-                action = {this.handleFormSubmit}
-                type = {'primary'}
-                title = {'Submit'}
-                style={buttonStyle}
-            /> { /*Submit */ }
+                <Input inputType={'text'}
+                       title= {'Major/Degree'}
+                       name= {'major'}
+                       value={this.state.newUser.major}
+                       placeholder = {'Enter your area of study emphasis'}
+                       handleChange = {this.handleInput}
+                /> {/* Major/Degree */}
 
-            <Button
-                action = {this.handleClearForm}
-                type = {'secondary'}
-                title = {'Clear'}
-                style={buttonStyle}
-            /> {/* Clear the form */}
-        </form>
-    );
-  }
+                <Input inputType={'text'}
+                       title= {'Resume'}
+                       name= {'resume'}
+                       value={this.state.newUser.resume}
+                       placeholder = {'LinkedIn Profile URL'}
+                       handleChange = {this.handleInput}
+                /> {/* Resume */}
+
+                <TextArea
+                    title={'Tells us about yourself'}
+                    rows={10}
+                    name={'about'}
+                    value={this.state.newUser.about}
+                    placeholder={'Please write a few sentences explaining your why you are the best candidate for this position(s)'}
+                    handleChange={this.handleInput}
+                />{/* About you */}
+
+                <TextArea
+                    title={'Experience'}
+                    rows={10}
+                    name={'skills'}
+                    value={this.state.newUser.skills}
+                    placeholder={'Please describe any work experience you have that has given you the skills to fulfill the requirements of the job(s) for which you are applying'}
+                    handleChange={this.handleInput}
+                />{/* Skills */}
+
+                <Input inputType={'text'}
+                       title= {'Professional Reference 1'}
+                       name= {'ref1'}
+                       value={this.state.newUser.ref1}
+                       placeholder = {'Name - Phone Number - Email'}
+                       handleChange = {this.handleInput}
+                /> {/* Professional Reference */}
+
+                <Input inputType={'text'}
+                       title= {'Professional Reference 2'}
+                       name= {'ref2'}
+                       value={this.state.newUser.ref2}
+                       placeholder = {'Name - Phone Number - Email'}
+                       handleChange = {this.handleInput}
+                /> {/* Professional Reference */}
+
+                <Input inputType={'text'}
+                       title= {'Personal Reference'}
+                       name= {'ref3'}
+                       value={this.state.newUser.ref3}
+                       placeholder = {'Name - Phone Number - Email'}
+                       handleChange = {this.handleInput}
+                /> {/* Personal Reference */}
+
+                <h2>Certification</h2>
+                <p>
+                    I certify that the information contained in this application is correct to the best of my knowledge.
+                    I understand that to falsify information is grounds for rejection or discharge should I be hired.
+                    I authorize any person, organization or company listed on this application to furnish you any and all information
+                    concerning my previous employment, education and qualifications for employment. I also authorize
+                    you to request and receive such information.
+                </p>
+                <p>
+                    In consideration for my employment, I agree to abide by the rules and regulations of the company,
+                    which may be changed, withdrawn, added or interpreted at any time, at the company’s sole discretion
+                    and without prior notice to me. I also acknowledge that my employment may be terminated, or any
+                    offer or acceptance of employment withdrawn, at any time, with or without cause, and with or without
+                    prior notice at the discretion of the company or myself.
+                </p>
+
+                <p>By submitting this application I acknowledge the above statement</p>
+
+                <Button
+                    action = {this.handleFormSubmit}
+                    type = {'primary'}
+                    title = {'Submit'}
+                    style={buttonStyle}
+                /> { /*Submit */ }
+
+                <Button
+                    action = {this.handleClearForm}
+                    type = {'secondary'}
+                    title = {'Clear'}
+                    style={buttonStyle}
+                /> {/* Clear the form */}
+            </form>
+        );
+    }
 }
 
 const buttonStyle = {
-  margin : '10px 10px 10px 10px'
+    margin : '10px 10px 10px 10px'
 }
