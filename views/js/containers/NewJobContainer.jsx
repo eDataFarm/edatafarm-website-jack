@@ -61,9 +61,9 @@ class NewJobContainer extends React.Component {
       let jobData = this.state.newJob;
       this.serverRequest(jobData);
       // console.log("Bool", this.state.requestSuccessful);
-      if(this.state.requestSuccessful){
-          this.props.history.push('/admin')
-      }
+      // if(this.state.requestSuccessful){
+      //     this.props.history.push('/admin')
+      // }
       return <NewJob />
   }
 
@@ -100,7 +100,7 @@ class NewJobContainer extends React.Component {
             /> {/* Expires after */}
 
             <TextArea
-                title={'Description.'}
+                title={'Description'}
                 rows={10}
                 name={'description'}
                 value={this.state.newJob.about}

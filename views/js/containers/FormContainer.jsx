@@ -112,6 +112,7 @@ class FormContainer extends React.Component {
                 education: [],
                 major: '',
                 about: '',
+                skills: '',
                 ref1: '',
                 ref2: '',
                 ref3: ''

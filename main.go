@@ -64,7 +64,7 @@ type Job struct {
 	Title		string		`db:"title" form:"title" binding:"required"`
 	Expiration	string		`db:"expiration" form:"expiration" binding:"required"`
 	Description	string 		`db:"description" form:"description" binding:"required"`
-	Applicants	int    		`db:"applicants" form:"applicants"`
+	Applicants	int64    	`db:"applicants" form:"applicants"`
 }
 
 // Create an empty list of jobs
@@ -403,14 +403,27 @@ func ApplyJob(c *gin.Context) {
 	// Check job ID is valid
 	if jobID, err := strconv.Atoi(c.Param("jobID")); err == nil {
 		// find job and increment likes
+		var applicants sql.NullInt64
+		jobsColumnNames := []string{"Applicants"}
+		jobsQuery := buildSelectStatement("jobs", jobsColumnNames, fmt.Sprintf("id = %d", jobID))
+		err := DBInstance.DB.QueryRow(jobsQuery).Scan(&applicants)
+		if err != nil {
+			fmt.Println("Unable to query jobs from db. Error message", err.Error())
+			c.JSON(http.StatusServiceUnavailable, err.Error())
+			return
+		}
+
+		// get updated jobs
+		jobs = getJobs()
+
 		for i := 0; i < len(jobs); i++ {
 			if jobs[i].Id == jobID {
-				jobs[i].Applicants = jobs[i].Applicants + 1
-
-				// Update join table with user
+				// get user info from email
 				email := c.Request.FormValue("email")
 				var user_id sql.NullInt64
-				queryUser := fmt.Sprintf("SELECT id FROM userinfo where email = '%s';", email)
+				userinfoColumnNames := []string{"id"}
+				whereClause := fmt.Sprintf("email = '%s';", email)
+				queryUser := buildSelectStatement("userinfo", userinfoColumnNames, whereClause)
 				err := DBInstance.DB.QueryRow(queryUser).Scan(&user_id)
 				if err != nil {
 					fmt.Println("Unable to query userinfo from db. Error message", err.Error())
@@ -418,10 +431,20 @@ func ApplyJob(c *gin.Context) {
 					return
 				}
 
-				result := DBInstance.DB.QueryRow("INSERT INTO user_job(user_id, job_id) VALUES($1,$2);",
-					user_id.Int64, jobID)
-				if result == nil {
+				// Insert into user_job join table
+				_, err = DBInstance.DB.Exec("INSERT INTO user_job(user_id, job_id) VALUES($1, $2);", user_id.Int64, jobID)
+				if err != nil {
 					fmt.Println("Unable to insert into user_job in db. Error message", err.Error())
+					c.JSON(http.StatusServiceUnavailable, err.Error())
+					return
+				}
+
+				// update jobs table with applications received
+				applicants.Int64 += 1
+				jobs[i].Applicants = applicants.Int64
+				_, err = DBInstance.DB.Exec("update jobs set applicants = $1 where id = $2;", applicants.Int64, jobID)
+				if err != nil {
+					fmt.Println("Unable to update applicants in jobs table in db. Error message", err.Error())
 					c.JSON(http.StatusServiceUnavailable, err.Error())
 					return
 				}
