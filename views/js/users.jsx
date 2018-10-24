@@ -1,4 +1,4 @@
-class Openings extends React.Component {
+class Users extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -26,7 +26,7 @@ class Openings extends React.Component {
 
     render() {
         if (this.state.admin) {
-            return <JobOpenings />;
+            return <Applicants />;
         }
         return (
             <div className="container">
@@ -36,20 +36,21 @@ class Openings extends React.Component {
     }
 }
 
-class JobOpenings extends React.Component {
+class Applicants extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            jobs: []
+            users: []
         };
 
         this.serverRequest = this.serverRequest.bind(this);
     }
 
     serverRequest() {
-        $.get("http://localhost:3000/api/v1/jobs", res => {
+        $.get("http://localhost:3000/api/v1/applicants/" + "3", res => {
+            console.log("users", users);
             this.setState({
-                jobs: res
+                users: res
             });
         });
     }
@@ -59,23 +60,20 @@ class JobOpenings extends React.Component {
     }
 
     render() {
-        if (this.state.jobs.length === 0) {
+        if (this.state.users.length === 0) {
             return (
                 <div className="container">
-                    <a href="new.html" className="btn btn-primary btn-lg btn-block pull-right new-job"><span>New Job</span></a>
-                    <h2>There are no open positions at the moment.</h2>
-                    <h2>Please add new jobs.</h2>
+                    <h2>There are no applicants for this position at the moment.</h2>
                 </div>
             );
         }
         return (
             <div className="container">
-                <a href="new.html" className="btn btn-primary btn-lg btn-block pull-right new-job"><span>New Job</span></a>
                 <h2>Jobs</h2>
                 <div className="row">
                     <div className="container">
-                        {this.state.jobs.map(function(job, i) {
-                            return <JobListing key={i} job={job} />;
+                        {this.state.users.map(function(job, i) {
+                            return <User key={i} job={job} />;
                         })}
                     </div>
                 </div>
@@ -84,25 +82,24 @@ class JobOpenings extends React.Component {
     }
 }
 
-class JobListing extends React.Component {
+class User extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            users: [],
-            jobs: []
+            users: []
         };
         this.applicants = this.applicants.bind(this);
         this.serverRequest = this.serverRequest.bind(this);
     }
 
     applicants() {
-        let job = this.props.job;
-        this.serverRequest(job);
+        let user = this.props.user;
+        this.serverRequest(user);
     }
 
-    serverRequest(job) {
+    serverRequest(user) {
         $.post(
-            "http://localhost:3000/api/v1/applicants/" + job.Id,
+            "http://localhost:3000/api/v1/user/" + user.Email,
             res => {
                 this.setState({users: res });
                 this.props.users = res;
@@ -115,11 +112,11 @@ class JobListing extends React.Component {
             <div className="col-xs-4">
                 <div className="panel panel-default">
                     <div className="panel-heading">
-                        #{this.props.job.Id}{" "}
+                        #{this.props.user.Id}{" "}
                     </div>
                     <div className="panel-body">
-                        <div><b>{this.props.job.Title}</b></div>
-                        <div>{this.props.job.Description}</div>
+                        <div><b>{this.props.user.Name}</b></div>
+                        <div>{this.props.user.About}</div>
                     </div>
                     <div className="panel-footer">
                         <div className="pull-right">
@@ -129,10 +126,10 @@ class JobListing extends React.Component {
                             </a>
                         </div>
                         <div>
-                            <a href={"users.html?JobID=" + this.props.job.Id} >
-                                {this.props.job.Applicants}
+                            <a href={"../users.html?JobID=" + this.props.user.Id} >
+                                {this.props.user.Applicants}
                             </a>
-                            &nbsp; Applications
+                            &nbsp; Profile
                         </div>
                     </div>
                 </div>
@@ -141,4 +138,4 @@ class JobListing extends React.Component {
     }
 }
 
-ReactDOM.render(<Openings />, document.getElementById('openings'));
+ReactDOM.render(<Users />, document.getElementById('users'));
