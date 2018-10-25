@@ -110,7 +110,7 @@ class User extends React.Component {
                             </a>
                         </div>
                         <div>
-                            <a href={"../user.html?Id=" + this.props.user.Id} >
+                            <a href={"user.html?email=" + this.props.user.Email} >
                                 Profile
                             </a>
                         </div>

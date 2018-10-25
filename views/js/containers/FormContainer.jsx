@@ -30,6 +30,7 @@ class FormContainer extends React.Component {
         this.handleClearForm = this.handleClearForm.bind(this);
         this.handleCheckBox = this.handleCheckBox.bind(this);
         this.serverRequest = this.serverRequest.bind(this);
+        this.lowercaseFirstLetter = this.lowercaseFirstLetter.bind(this);
     }
 
     /* This lifecycle hook gets executed when the component mounts */
@@ -120,9 +121,22 @@ class FormContainer extends React.Component {
         })
     }
 
-    render() {
-        return (
+    lowercaseFirstLetter(string) {
+        return string.charAt(0).toLowerCase() + string.slice(1);
+    }
 
+    render() {
+        let user = this.props.user;
+        if (user !== undefined) {
+            for (var key in user) {
+                if (user.hasOwnProperty(key)) {
+                    let newKey = this.lowercaseFirstLetter(key);
+                    this.state.newUser[newKey] = user[key];
+                }
+            }
+        }
+
+        return (
             <form className="container-fluid" onSubmit={this.handleFormSubmit}>
 
                 <Input inputType={'text'}

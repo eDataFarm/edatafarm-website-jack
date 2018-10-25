@@ -23,7 +23,6 @@ class NewJob extends React.Component {
         this.serverRequest();
     }
 
-
     render() {
         if (this.state.admin) {
             return (
