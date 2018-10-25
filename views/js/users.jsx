@@ -47,8 +47,13 @@ class Applicants extends React.Component {
     }
 
     serverRequest() {
-        $.get("http://localhost:3000/api/v1/applicants/" + "3", res => {
-            console.log("users", users);
+        let jobID;
+        if ( location.search.match(/JobID=([^&]*)/i) )
+        {
+            jobID = location.search.match(/JobID=([^&]*)/i)[1];
+        }
+
+        $.get("http://localhost:3000/api/v1/applicants/" + jobID, res => {
             this.setState({
                 users: res
             });
@@ -69,11 +74,11 @@ class Applicants extends React.Component {
         }
         return (
             <div className="container">
-                <h2>Jobs</h2>
+                <h2>Users</h2>
                 <div className="row">
                     <div className="container">
-                        {this.state.users.map(function(job, i) {
-                            return <User key={i} job={job} />;
+                        {this.state.users.map(function(user, i) {
+                            return <User key={i} user={user} />;
                         })}
                     </div>
                 </div>
@@ -85,26 +90,6 @@ class Applicants extends React.Component {
 class User extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            users: []
-        };
-        this.applicants = this.applicants.bind(this);
-        this.serverRequest = this.serverRequest.bind(this);
-    }
-
-    applicants() {
-        let user = this.props.user;
-        this.serverRequest(user);
-    }
-
-    serverRequest(user) {
-        $.post(
-            "http://localhost:3000/api/v1/user/" + user.Email,
-            res => {
-                this.setState({users: res });
-                this.props.users = res;
-            }
-        );
     }
 
     render() {
@@ -120,16 +105,14 @@ class User extends React.Component {
                     </div>
                     <div className="panel-footer">
                         <div className="pull-right">
-                            Edit &nbsp;
-                            <a onClick={this.editJob} className="btn btn-default">
-                                <span className="glyphicon glyphicon-pencil" />
+                            <a href={"mailto:" + this.props.user.Email} >
+                                Email
                             </a>
                         </div>
                         <div>
-                            <a href={"../users.html?JobID=" + this.props.user.Id} >
-                                {this.props.user.Applicants}
+                            <a href={"../user.html?Id=" + this.props.user.Id} >
+                                Profile
                             </a>
-                            &nbsp; Profile
                         </div>
                     </div>
                 </div>
