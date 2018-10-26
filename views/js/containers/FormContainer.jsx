@@ -84,7 +84,6 @@ class FormContainer extends React.Component {
                 response => {
                 // console.log("res... ", response);
                 this.setState({ users: response });
-                this.props.users = response;
             });
     }
 
@@ -97,6 +96,9 @@ class FormContainer extends React.Component {
         let userData = this.state.newUser;
 
         this.serverRequest(userData);
+
+        alert('Application form was submitted');
+        event.preventDefault();
     }
 
     handleClearForm(e) {

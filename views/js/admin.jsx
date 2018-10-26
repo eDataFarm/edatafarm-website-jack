@@ -124,7 +124,7 @@ class JobListing extends React.Component {
                     <div className="panel-footer">
                         <div className="pull-right">
                             Edit &nbsp;
-                            <a onClick={this.editJob} className="btn btn-default">
+                            <a href={"new.html?JobID=" + this.props.job.Id} >
                                 <span className="glyphicon glyphicon-pencil" />
                             </a>
                         </div>

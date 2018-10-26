@@ -135,6 +135,7 @@ func main() {
 		api.GET("/users", UsersHandler)
 		api.GET("/applicants/:jobID", UsersHandler)
 		api.POST("/users", CreateUser)
+		api.GET("/jobs/:jobID", JobHandler)
 		api.GET("/jobs", JobsHandler)
 		api.POST("/jobs", CreateJob)
 		api.POST("/jobs/apply/:jobID", ApplyJob)
@@ -357,6 +358,46 @@ func JobsHandler(c *gin.Context) {
 	jobs = getJobs()
 
 	c.JSON(http.StatusOK, jobs)
+}
+
+// JobHandler retrieves a job
+func JobHandler(c *gin.Context) {
+	jobID := c.Param("jobID")
+	job := new(Job)
+
+	if jobID == "null" {
+		c.JSON(http.StatusOK, job)
+		return
+	}
+
+	if m, err := regexp.MatchString(`^([0-9]+)$`, jobID); !m {
+		fmt.Println("Please provide a valid jobID")
+		c.JSON(http.StatusUnprocessableEntity, err.Error())
+		return
+	}
+
+	c.Header("Content-Type", "application/json")
+
+	fmt.Println("Querying Jobs")
+	targetColumnNames := structs.Names(&Job{})
+	whereClause := fmt.Sprintf("id = '%s';", jobID)
+	queryUser := buildSelectStatement("jobs", targetColumnNames, whereClause)
+	err := DBInstance.DB.QueryRow(queryUser).
+		Scan(&job.Id, &job.Title, &job.Expiration, &job.Description, &job.Applicants)
+
+	if job.Id == 0 {
+		// JobID is invalid
+		c.AbortWithStatus(http.StatusNotFound)
+	}
+
+	if err != nil {
+		fmt.Printf("Unable to run '%s' against table jobs in db. Error message: %s\n", queryUser, err.Error())
+		c.JSON(http.StatusServiceUnavailable, err.Error())
+		return
+	}
+	log.Printf("Retrieved job with ID: %d\n", job.Id)
+
+	c.JSON(http.StatusOK, job)
 }
 
 // CreateJob creates a new job

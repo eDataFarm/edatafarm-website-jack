@@ -105,7 +105,6 @@ class Job extends React.Component {
             { applied: 1 , email: email},
             res => {
                 this.setState({ applied: "Applied!", jobs: res });
-                this.props.jobs = res;
             }
         );
     }

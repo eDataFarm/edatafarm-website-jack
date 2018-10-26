@@ -2,7 +2,8 @@ class NewJob extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            admin: false
+            admin: false,
+            job: ""
         };
 
         this.serverRequest = this.serverRequest.bind(this);
@@ -17,6 +18,18 @@ class NewJob extends React.Component {
                 });
             }
         });
+
+        let jobID;
+        if ( location.search.match(/JobID=([^&]*)/i) )
+        {
+            jobID = location.search.match(/JobID=([^&]*)/i)[1];
+        }
+
+        $.get("http://localhost:3000/api/v1/jobs/" + jobID, res => {
+            this.setState({
+                job: res
+            });
+        });
     }
 
     componentDidMount() {
@@ -27,7 +40,7 @@ class NewJob extends React.Component {
         if (this.state.admin) {
             return (
                 <div className="col-md-6">
-                    <NewJobContainer />
+                    <NewJobContainer job={this.state.job}/>
                 </div>
             );
         }
