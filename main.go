@@ -72,7 +72,7 @@ type Job struct {
 
 type NewJob struct {
 	*Job
-	Countries string
+	Countries []string
 }
 
 // Create an empty list of jobs
@@ -381,7 +381,7 @@ func JobHandler(c *gin.Context) {
 	if err != nil {
 		log.Fatal("Cannot load countries file")
 	}
-	countriesStr := string(countries)
+	countriesStr := strings.Split(string(countries), "\n")
 	newJob := NewJob{job, countriesStr}
 
 	if jobID == "undefined" {

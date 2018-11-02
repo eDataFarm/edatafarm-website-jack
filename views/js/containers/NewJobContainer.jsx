@@ -8,13 +8,14 @@ class NewJobContainer extends React.Component {
                 expiration: '',
                 description: '',
                 country: '',
-                languages: []
+                languages: ''
             },
             countries: [],
             redirectToReferrer: false
         }
 
         this.handleTitle = this.handleTitle.bind(this);
+        this.handleLanguages = this.handleLanguages.bind(this);
         this.handleInput = this.handleInput.bind(this);
         this.handleExpiresAt = this.handleExpiresAt.bind(this);
         this.handleDescription = this.handleDescription.bind(this);
@@ -31,6 +32,14 @@ class NewJobContainer extends React.Component {
         this.setState( prevState => ({
             newJob : {...prevState.newJob, title: value}
         })
+        )
+    }
+
+    handleLanguages(e) {
+        let value = e.target.value;
+        this.setState( prevState => ({
+                newJob : {...prevState.newJob, languages: value}
+            })
         )
     }
 
@@ -79,7 +88,7 @@ class NewJobContainer extends React.Component {
                 expiration: '',
                 description: '',
                 country: '',
-                languages: []
+                languages: ''
             }
         })
     }
@@ -92,7 +101,7 @@ class NewJobContainer extends React.Component {
       let job = this.props.job;
       if (job !== undefined) {
           if (job["Countries"] !== undefined) {
-              this.state.countries = job["Countries"].split("\n");
+              this.state.countries = job["Countries"];
               delete job["Countries"];
           }
 
@@ -151,8 +160,8 @@ class NewJobContainer extends React.Component {
                      title= {'Languages'}
                      name= {'languages'}
                      value={this.state.newJob.languages}
-                     placeholder = {'Comma separated list of any language(s) other than English you are fluent in'}
-                     handleChange = {this.handleInput}
+                     placeholder = {'Comma separated list of any language(s) required'}
+                     handleChange = {this.handleLanguages}
               /> {/* Languages */}
 
               <Button
