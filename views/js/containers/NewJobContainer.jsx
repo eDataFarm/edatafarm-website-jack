@@ -91,8 +91,11 @@ class NewJobContainer extends React.Component {
     render() {
       let job = this.props.job;
       if (job !== undefined) {
-          this.state.countries = job["Countries"]
-          delete job["Countries"];
+          if (job["Countries"] !== undefined) {
+              this.state.countries = job["Countries"].split("\n");
+              delete job["Countries"];
+          }
+
           for (var key in job) {
               if (job.hasOwnProperty(key)) {
                   let newKey = this.lowercaseFirstLetter(key);
