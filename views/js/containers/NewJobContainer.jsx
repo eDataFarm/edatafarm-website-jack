@@ -6,12 +6,16 @@ class NewJobContainer extends React.Component {
             newJob: {
                 title: '',
                 expiration: '',
-                description: ''
+                description: '',
+                country: '',
+                languages: []
             },
+            countries: [],
             redirectToReferrer: false
         }
 
         this.handleTitle = this.handleTitle.bind(this);
+        this.handleInput = this.handleInput.bind(this);
         this.handleExpiresAt = this.handleExpiresAt.bind(this);
         this.handleDescription = this.handleDescription.bind(this);
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
@@ -46,6 +50,14 @@ class NewJobContainer extends React.Component {
         )
     }
 
+    handleInput(e) {
+        let value = e.target.value;
+        let name = e.target.name;
+        this.setState( prevState => ({
+            newUser : {...prevState.newUser, [name]: value}})
+        )
+    }
+
     serverRequest(jobData) {
         $.post("http://localhost:3000/api/v1/jobs", jobData, response => {});
     }
@@ -56,7 +68,6 @@ class NewJobContainer extends React.Component {
         this.serverRequest(jobData);
         this.setState({redirectToReferrer: true})
         alert('Job was submitted');
-        //this.props.history.push('/admin')
         event.preventDefault();
     }
 
@@ -66,8 +77,10 @@ class NewJobContainer extends React.Component {
             newJob: {
                 title: '',
                 expiration: '',
-                description: ''
-            },
+                description: '',
+                country: '',
+                languages: []
+            }
         })
     }
 
@@ -75,10 +88,11 @@ class NewJobContainer extends React.Component {
         return string.charAt(0).toLowerCase() + string.slice(1);
     }
 
-
     render() {
       let job = this.props.job;
       if (job !== undefined) {
+          this.state.countries = job["Countries"]
+          delete job["Countries"];
           for (var key in job) {
               if (job.hasOwnProperty(key)) {
                   let newKey = this.lowercaseFirstLetter(key);
@@ -86,7 +100,7 @@ class NewJobContainer extends React.Component {
               }
           }
           this.state.newJob.expiration = 1;
-          job = undefined;
+          this.props.jobs = undefined;
       }
 
       const redirectToReferrer = this.state.redirectToReferrer;
@@ -122,6 +136,22 @@ class NewJobContainer extends React.Component {
                   handleChange={this.handleDescription}
               />{/* Job description */}
 
+              <Select title={'Country'}
+                      name={'country'}
+                      options = {this.state.countries}
+                      value = {this.state.newJob.country}
+                      placeholder = {'Select Country'}
+                      handleChange = {this.handleInput}
+              /> {/* Country Selection */}
+
+              <Input inputType={'text'}
+                     title= {'Languages'}
+                     name= {'languages'}
+                     value={this.state.newJob.languages}
+                     placeholder = {'Comma separated list of any language(s) other than English you are fluent in'}
+                     handleChange = {this.handleInput}
+              /> {/* Languages */}
+
               <Button
                   action = {this.handleFormSubmit}
                   type = {'primary'}
@@ -141,5 +171,5 @@ class NewJobContainer extends React.Component {
 }
 
 const buttonStyle = {
-  margin : '10px 10px 10px 10px'
+  margin : '10px'
 }

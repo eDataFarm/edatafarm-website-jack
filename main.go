@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -45,7 +46,7 @@ type User struct {
 	Email 		string 		`db:"email" form:"email" binding:"required"`
 	Phone  		string 		`db:"phone" form:"phone" binding:"required"`
 	Position 	[]string 	`db:"position" form:"position[]" binding:"required"`
-	Languages 	string 		`db:"languages" form:"languages"`
+	Languages 	[]string 		`db:"languages" form:"languages"`
 	Referrer  	string 		`db:"referrer" form:"referrer"`
 	Resume 		string 		`db:"resume" form:"resume" binding:"required"`
 	Education 	[]string	`db:"education" form:"education[]"`
@@ -65,6 +66,13 @@ type Job struct {
 	Expiration	string		`db:"expiration" form:"expiration" binding:"required"`
 	Description	string 		`db:"description" form:"description" binding:"required"`
 	Applicants	int64    	`db:"applicants" form:"applicants"`
+	Country		string		`db:"country" form:"country" binding:"required"`
+	Languages	[]string	`db:"languages" form:"languages"`
+}
+
+type NewJob struct {
+	*Job
+	Countries string
 }
 
 // Create an empty list of jobs
@@ -230,8 +238,8 @@ func UsersHandler(c *gin.Context) {
 
 	for rows.Next() {
 		user := new(User)
-		var education, position string
-		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &user.Languages, &user.Referrer,
+		var education, position, languages string
+		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &languages, &user.Referrer,
 			&user.Resume, &education, &user.Major, &user.About, &user.Skills, &user.Ref1, &user.Ref2, &user.Ref3, &user.Admin)
 		if err != nil {
 			fmt.Println("Unable to scan userinfo from db. Error message", err.Error())
@@ -240,6 +248,7 @@ func UsersHandler(c *gin.Context) {
 		}
 
 		user.Position = strings.Split(position, ",")
+		user.Languages = strings.Split(languages, ",")
 		user.Education = strings.Split(education, ",")
 		users = append(users, user)
 	}
@@ -266,12 +275,12 @@ func UserHandler(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 
 	fmt.Println("Querying User")
-	var education, position string
+	var education, position, languages string
 	targetColumnNames := structs.Names(&User{})
 	whereClause := fmt.Sprintf("email = '%s';", email)
 	queryUser := buildSelectStatement("userinfo", targetColumnNames, whereClause)
 	err := DBInstance.DB.QueryRow(queryUser).
-		Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &user.Languages, &user.Referrer,
+		Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &languages, &user.Referrer,
 			&user.Resume, &education, &user.Major, &user.About, &user.Skills, &user.Ref1, &user.Ref2, &user.Ref3, &user.Admin)
 
 	if user.Email == "" {
@@ -287,6 +296,7 @@ func UserHandler(c *gin.Context) {
 
 	user.Position = strings.Split(position, ",")
 	user.Education = strings.Split(education, ",")
+	user.Languages = strings.Split(languages, ",")
 	c.JSON(http.StatusOK, user)
 }
 
@@ -307,7 +317,7 @@ func CreateUser(c *gin.Context) {
 		targetColumnNames := structs.Names(&User{})
 		insertUser := buildInsertStatement("userinfo", targetColumnNames[1:])
 		err := DBInstance.DB.QueryRow(insertUser, user.Name, user.Email, user.Phone,
-			strings.Join(user.Position, ","), user.Languages, user.Referrer, user.Resume,
+			strings.Join(user.Position, ","), strings.Join(user.Languages, ","), user.Referrer, user.Resume,
 			strings.Join(user.Education, ","), user.Major, user.About, user.Skills,
 			user.Ref1, user.Ref2, user.Ref3, false).Scan(&user.Id)
 		if err != nil {
@@ -338,13 +348,15 @@ func getJobs() []*Job {
 	}
 
 	for rows.Next() {
+		var languages string
 		job := new(Job)
-		err = rows.Scan(&job.Id, &job.Title, &job.Expiration, &job.Description, &job.Applicants)
+		err = rows.Scan(&job.Id, &job.Title, &job.Expiration, &job.Description, &job.Applicants, &job.Country, &languages)
 		if err != nil {
 			fmt.Println("Unable to scan job from db. Error message", err.Error())
 			log.Fatalf("could not get job: %+v", err)
 		}
 
+		job.Languages = strings.Split(languages, ",")
 		jobs = append(jobs, job)
 	}
 
@@ -365,14 +377,20 @@ func JobHandler(c *gin.Context) {
 	jobID := c.Param("jobID")
 	job := new(Job)
 
-	if jobID == "null" {
-		c.JSON(http.StatusOK, job)
+	countries, err := ioutil.ReadFile("config/countries")
+	if err != nil {
+		log.Fatal("Cannot load countries file")
+	}
+	countriesStr := string(countries)
+	newJob := NewJob{job, countriesStr}
+
+	if jobID == "undefined" {
+		c.JSON(http.StatusOK, newJob)
 		return
 	}
 
-	if m, err := regexp.MatchString(`^([0-9]+)$`, jobID); !m {
-		fmt.Println("Please provide a valid jobID")
-		c.JSON(http.StatusUnprocessableEntity, err.Error())
+	if m, _ := regexp.MatchString(`^([0-9]+)$`, jobID); !m {
+		c.JSON(http.StatusUnprocessableEntity, "Please provide a valid jobID")
 		return
 	}
 
@@ -382,8 +400,9 @@ func JobHandler(c *gin.Context) {
 	targetColumnNames := structs.Names(&Job{})
 	whereClause := fmt.Sprintf("id = '%s';", jobID)
 	queryUser := buildSelectStatement("jobs", targetColumnNames, whereClause)
-	err := DBInstance.DB.QueryRow(queryUser).
-		Scan(&job.Id, &job.Title, &job.Expiration, &job.Description, &job.Applicants)
+	var languages string
+	err = DBInstance.DB.QueryRow(queryUser).
+		Scan(&job.Id, &job.Title, &job.Expiration, &job.Description, &job.Applicants, &job.Country, &languages)
 
 	if job.Id == 0 {
 		// JobID is invalid
@@ -397,7 +416,8 @@ func JobHandler(c *gin.Context) {
 	}
 	log.Printf("Retrieved job with ID: %d\n", job.Id)
 
-	c.JSON(http.StatusOK, job)
+	job.Languages = strings.Split(languages, ",")
+	c.JSON(http.StatusOK, newJob)
 }
 
 // CreateJob creates a new job

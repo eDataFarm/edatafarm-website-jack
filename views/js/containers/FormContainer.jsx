@@ -21,7 +21,7 @@ class FormContainer extends React.Component {
             },
             positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
             educationOptions: ['G.E.D.', 'Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
-            users: []
+            users: [],
         }
 
         this.handleInput = this.handleInput.bind(this);
@@ -98,6 +98,7 @@ class FormContainer extends React.Component {
         this.serverRequest(userData);
 
         alert('Application form was submitted');
+        window.location.reload();
         event.preventDefault();
     }
 
@@ -125,6 +126,15 @@ class FormContainer extends React.Component {
 
     lowercaseFirstLetter(string) {
         return string.charAt(0).toLowerCase() + string.slice(1);
+    }
+
+    componentWillMount() {
+        let idToken = localStorage.getItem("id_token");
+        if (idToken) {
+            $(this).find(':input[type=primary]').prop('disabled', '');
+        } else {
+            $(this).find(':input[type=primary]').prop('disabled', 'disabled');
+        }
     }
 
     render() {
@@ -168,7 +178,7 @@ class FormContainer extends React.Component {
                        title= {'Languages'}
                        name= {'languages'}
                        value={this.state.newUser.languages}
-                       placeholder = {'Please list any language(s) other than English you are fluent in'}
+                       placeholder = {'Comma separated list of any language(s) other than English you are fluent in'}
                        handleChange = {this.handleInput}
                 /> {/* Languages */}
 
@@ -282,5 +292,5 @@ class FormContainer extends React.Component {
 }
 
 const buttonStyle = {
-    margin : '10px 10px 10px 10px'
+    margin : '10px'
 }

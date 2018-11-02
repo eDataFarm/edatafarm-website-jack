@@ -5,6 +5,8 @@ CREATE TABLE jobs
         description character varying(500) NOT NULL,
         expiration timestamp not null default CURRENT_TIMESTAMP,
         applicants integer NOT NULL default 0,
+        country character varying(100) NOT NULL,
+        languages character varying(100),
         created timestamp not null default CURRENT_TIMESTAMP
     )
     WITH (OIDS=FALSE);
