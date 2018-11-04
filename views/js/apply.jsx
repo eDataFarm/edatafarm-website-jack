@@ -29,7 +29,7 @@ class Apply extends React.Component {
             return <Jobs />;
         }
         return (
-            <div className="col-md-6">
+            <div>
                 <FormContainer />
             </div>
         );

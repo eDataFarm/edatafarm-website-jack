@@ -11,7 +11,7 @@ class NewJobContainer extends React.Component {
                 languages: ''
             },
             countries: [],
-            redirectToReferrer: false
+            loadedJobs: false
         }
 
         this.handleTitle = this.handleTitle.bind(this);
@@ -75,9 +75,8 @@ class NewJobContainer extends React.Component {
         e.preventDefault();
         let jobData = this.state.newJob;
         this.serverRequest(jobData);
-        this.setState({redirectToReferrer: true})
         alert('Job was submitted');
-        event.preventDefault();
+        window.location.assign('/admin');
     }
 
     handleClearForm(e) {
@@ -98,88 +97,84 @@ class NewJobContainer extends React.Component {
     }
 
     render() {
-      let job = this.props.job;
-      if (job !== undefined) {
-          if (job["Countries"] !== undefined) {
-              this.state.countries = job["Countries"];
-              delete job["Countries"];
-          }
+        let job = this.props.job;
+        if (job["Countries"] !== undefined) {
+            this.state.countries = job["Countries"];
+            delete job["Countries"];
+        }
 
-          for (var key in job) {
-              if (job.hasOwnProperty(key)) {
-                  let newKey = this.lowercaseFirstLetter(key);
-                  this.state.newJob[newKey] = job[key];
-              }
-          }
-          this.state.newJob.expiration = 1;
-          this.props.jobs = undefined;
-      }
 
-      const redirectToReferrer = this.state.redirectToReferrer;
-      if (redirectToReferrer === true) {
-          //return <<Redirect to="/admin" />
-      }
+        if (!this.state.loadedJobs) {
+            for (var key in job) {
+                if (job.hasOwnProperty(key)) {
+                    let newKey = this.lowercaseFirstLetter(key);
+                    this.state.newJob[newKey] = job[key];
+                }
+            }
+            this.state.newJob.expiration = 1;
+            this.state.loadedJobs = true;
+        }
 
-      return (
-          <form className="container-fluid" onSubmit={this.handleFormSubmit}>
+        return (
+            <form className="container-fluid" onSubmit={this.handleFormSubmit}>
 
-              <Input inputType={'text'}
-                     title= {'Job Title'}
-                     name= {'title'}
-                     value={this.state.newJob.title}
-                     placeholder = {'Enter job title'}
-                     handleChange = {this.handleTitle}
-              /> {/* Title of the job */}
+                <Input inputType={'text'}
+                       title= {'Job Title'}
+                       name= {'title'}
+                       value={this.state.newJob.title}
+                       placeholder = {'Enter job title'}
+                       handleChange = {this.handleTitle}
+                /> {/* Title of the job */}
 
-              <Input inputType={'number'}
-                     name={'expiration'}
-                     title= {'Expires after'}
-                     value={this.state.newJob.expiration}
-                     placeholder = {'Weeks'}
-                     handleChange={this.handleExpiresAt}
-              /> {/* Expires after */}
+                <Input inputType={'number'}
+                       name={'expiration'}
+                       title= {'Expires after'}
+                       value={this.state.newJob.expiration}
+                       placeholder = {'Weeks'}
+                       handleChange={this.handleExpiresAt}
+                /> {/* Expires after */}
 
-              <TextArea
-                  title={'Description'}
-                  rows={10}
-                  name={'description'}
-                  value={this.state.newJob.description}
-                  placeholder={'Describe the position'}
-                  handleChange={this.handleDescription}
-              />{/* Job description */}
+                <TextArea
+                    title={'Description'}
+                    rows={10}
+                    name={'description'}
+                    value={this.state.newJob.description}
+                    placeholder={'Describe the position'}
+                    handleChange={this.handleDescription}
+                />{/* Job description */}
 
-              <Select title={'Country'}
-                      name={'country'}
-                      options = {this.state.countries}
-                      value = {this.state.newJob.country}
-                      placeholder = {'Select Country'}
-                      handleChange = {this.handleInput}
-              /> {/* Country Selection */}
+                <Select title={'Country'}
+                        name={'country'}
+                        options = {this.state.countries}
+                        value = {this.state.newJob.country}
+                        placeholder = {'Select Country'}
+                        handleChange = {this.handleInput}
+                /> {/* Country Selection */}
 
-              <Input inputType={'text'}
-                     title= {'Languages'}
-                     name= {'languages'}
-                     value={this.state.newJob.languages}
-                     placeholder = {'Comma separated list of any language(s) required'}
-                     handleChange = {this.handleLanguages}
-              /> {/* Languages */}
+                <Input inputType={'text'}
+                       title= {'Languages'}
+                       name= {'languages'}
+                       value={this.state.newJob.languages}
+                       placeholder = {'Comma separated list of any language(s) required'}
+                       handleChange = {this.handleLanguages}
+                /> {/* Languages */}
 
-              <Button
-                  action = {this.handleFormSubmit}
-                  type = {'primary'}
-                  title = {'Submit'}
-                  style={buttonStyle}
-              /> { /*Submit */ }
+                <Button
+                    action = {this.handleFormSubmit}
+                    type = {'primary'}
+                    title = {'Submit'}
+                    style={buttonStyle}
+                /> { /*Submit */ }
 
-              <Button
-                  action = {this.handleClearForm}
-                  type = {'secondary'}
-                  title = {'Clear'}
-                  style={buttonStyle}
-              /> {/* Clear the form */}
-          </form>
-      );
-  }
+                <Button
+                    action = {this.handleClearForm}
+                    type = {'secondary'}
+                    title = {'Clear'}
+                    style={buttonStyle}
+                /> {/* Clear the form */}
+            </form>
+        );
+    }
 }
 
 const buttonStyle = {

@@ -99,7 +99,6 @@ class FormContainer extends React.Component {
 
         alert('Application form was submitted');
         window.location.reload();
-        event.preventDefault();
     }
 
     handleClearForm(e) {
