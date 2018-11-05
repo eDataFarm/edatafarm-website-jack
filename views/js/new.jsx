@@ -17,6 +17,8 @@ class NewJob extends React.Component {
                     admin: true
                 });
             }
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            alert(textStatus + ': ' + errorThrown);
         });
 
         let jobID;
@@ -29,6 +31,8 @@ class NewJob extends React.Component {
             this.setState({
                 job: res
             });
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            alert(textStatus + ': ' + errorThrown);
         });
     }
 

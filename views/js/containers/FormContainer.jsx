@@ -78,13 +78,13 @@ class FormContainer extends React.Component {
     }
 
     serverRequest(userData) {
-        $.post(
-            "http://localhost:3000/api/v1/users",
-            userData,
-                response => {
-                // console.log("res... ", response);
-                this.setState({ users: response });
-            });
+        $.post("http://localhost:3000/api/v1/users", userData, response => {
+            this.setState({ users: response });
+            alert('Application form was submitted');
+            window.location.reload();
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            alert(textStatus + ': ' + errorThrown);
+        });
     }
 
     handleFormSubmit(e) {
@@ -93,12 +93,7 @@ class FormContainer extends React.Component {
         if (email) {
             this.state.newUser.email = email
         }
-        let userData = this.state.newUser;
-
-        this.serverRequest(userData);
-
-        alert('Application form was submitted');
-        window.location.reload();
+        this.serverRequest(this.state.newUser);
     }
 
     handleClearForm(e) {

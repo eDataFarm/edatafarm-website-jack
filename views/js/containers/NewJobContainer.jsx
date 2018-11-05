@@ -63,20 +63,23 @@ class NewJobContainer extends React.Component {
         let value = e.target.value;
         let name = e.target.name;
         this.setState( prevState => ({
-            newUser : {...prevState.newUser, [name]: value}})
+            newJob : {...prevState.newJob, [name]: value}})
         )
     }
 
     serverRequest(jobData) {
-        $.post("http://localhost:3000/api/v1/jobs", jobData, response => {});
+        $.post("http://localhost:3000/api/v1/jobs", jobData, response => {
+            alert('Job was submitted');
+            window.location.assign('/admin');
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            alert(textStatus + ': ' + errorThrown);
+        });
     }
 
     handleFormSubmit(e) {
         e.preventDefault();
         let jobData = this.state.newJob;
         this.serverRequest(jobData);
-        alert('Job was submitted');
-        window.location.assign('/admin');
     }
 
     handleClearForm(e) {

@@ -407,6 +407,7 @@ func JobHandler(c *gin.Context) {
 	if job.Id == 0 {
 		// JobID is invalid
 		c.AbortWithStatus(http.StatusNotFound)
+		return
 	}
 
 	if err != nil {
@@ -445,7 +446,7 @@ func CreateJob(c *gin.Context) {
 		targetColumnNames := structs.Names(&Job{})
 		insertJob := buildInsertStatement("jobs", targetColumnNames[1:])
 		err = DBInstance.DB.QueryRow(insertJob, job.Title, expiration.Format("2006-01-02T15:04:05-0700"),
-			job.Description, 0).Scan(&job.Id)
+			job.Description, 0, job.Country, strings.Join(job.Languages, ",")).Scan(&job.Id)
 		if err != nil {
 			fmt.Println("Unable to insert job into db. Error message", err.Error())
 			c.JSON(http.StatusServiceUnavailable, err.Error())
