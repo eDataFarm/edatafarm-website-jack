@@ -227,7 +227,7 @@ func UsersHandler(c *gin.Context) {
 	jobID := c.Param("jobID")
 
 	if jobID != "" {
-		whereClause = fmt.Sprintf("id in(SELECT user_id from user_job where job_id = %s);", jobID)
+		whereClause = fmt.Sprintf("id in(SELECT user_id from user_job where job_id = %s)", jobID)
 	}
 
 	queryUser := buildSelectStatement("userinfo", targetColumnNames, whereClause)
@@ -279,7 +279,7 @@ func UserHandler(c *gin.Context) {
 	fmt.Println("Querying User")
 	var education, position, languages string
 	targetColumnNames := structs.Names(&User{})
-	whereClause := fmt.Sprintf("email = '%s';", email)
+	whereClause := fmt.Sprintf("email = '%s'", email)
 	queryUser := buildSelectStatement("userinfo", targetColumnNames, whereClause)
 	err := DBInstance.DB.QueryRow(queryUser).
 		Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &languages, &user.Referrer,
@@ -288,6 +288,7 @@ func UserHandler(c *gin.Context) {
 	if user.Email == "" {
 		// User email is invalid
 		c.AbortWithStatus(http.StatusNotFound)
+		return
 	}
 
 	if err != nil {
@@ -400,7 +401,7 @@ func JobHandler(c *gin.Context) {
 
 	fmt.Println("Querying Jobs")
 	targetColumnNames := structs.Names(&Job{})
-	whereClause := fmt.Sprintf("id = '%s';", jobID)
+	whereClause := fmt.Sprintf("id = '%s'", jobID)
 	queryUser := buildSelectStatement("jobs", targetColumnNames, whereClause)
 	var languages string
 	err := DBInstance.DB.QueryRow(queryUser).
@@ -486,7 +487,7 @@ func ApplyJob(c *gin.Context) {
 				email := c.Request.FormValue("email")
 				var user_id sql.NullInt64
 				userinfoColumnNames := []string{"id"}
-				whereClause := fmt.Sprintf("email = '%s';", email)
+				whereClause := fmt.Sprintf("email = '%s'", email)
 				queryUser := buildSelectStatement("userinfo", userinfoColumnNames, whereClause)
 				err := DBInstance.DB.QueryRow(queryUser).Scan(&user_id)
 				if err != nil {
@@ -536,8 +537,10 @@ func getValueString(numberOfColumns int) string {
 }
 
 func buildSelectStatement(targetTableName string, targetColumnNames []string, whereClause string) string {
-	return fmt.Sprintf("SELECT %s from %s WHERE %s;", strings.Join(targetColumnNames, ","),
+	return_s := fmt.Sprintf("SELECT %s from %s WHERE %s ORDER BY id;", strings.Join(targetColumnNames, ","),
 		targetTableName, whereClause)
+	log.Println(return_s)
+	return return_s
 }
 
 func buildInsertStatement(targetTableName string, targetColumnNames []string) string {

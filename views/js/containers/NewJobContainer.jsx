@@ -171,7 +171,7 @@ class NewJobContainer extends React.Component {
 
                 <Button
                     action = {this.handleClearForm}
-                    type = {'secondary'}
+                    type = {'primary'}
                     title = {'Clear'}
                     style={buttonStyle}
                 /> {/* Clear the form */}

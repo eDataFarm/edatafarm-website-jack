@@ -22,6 +22,7 @@ class FormContainer extends React.Component {
             positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
             educationOptions: ['G.E.D.', 'Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
             users: [],
+            loadedUser: false
         }
 
         this.handleInput = this.handleInput.bind(this);
@@ -78,6 +79,12 @@ class FormContainer extends React.Component {
     }
 
     serverRequest(userData) {
+        console.log("UserData:", userData);
+        let email = localStorage.getItem("email");
+        if (email) {
+            this.state.newUser.email = email
+        }
+
         $.post("http://localhost:3000/api/v1/users", userData, response => {
             this.setState({ users: response });
             alert('Application form was submitted');
@@ -89,11 +96,8 @@ class FormContainer extends React.Component {
 
     handleFormSubmit(e) {
         e.preventDefault();
-        let email = localStorage.getItem("email");
-        if (email) {
-            this.state.newUser.email = email
-        }
-        this.serverRequest(this.state.newUser);
+        let userData = this.state.newUser;
+        this.serverRequest(userData);
     }
 
     handleClearForm(e) {
@@ -133,13 +137,14 @@ class FormContainer extends React.Component {
 
     render() {
         let user = this.props.user;
-        if (user !== undefined) {
+        if (user !== undefined && !this.state.loadedUser) {
             for (var key in user) {
                 if (user.hasOwnProperty(key)) {
                     let newKey = this.lowercaseFirstLetter(key);
                     this.state.newUser[newKey] = user[key];
                 }
             }
+            this.state.loadedUser = true;
         }
 
         return (
@@ -276,7 +281,7 @@ class FormContainer extends React.Component {
 
                 <Button
                     action = {this.handleClearForm}
-                    type = {'secondary'}
+                    type = {'primary'}
                     title = {'Clear'}
                     style={buttonStyle}
                 /> {/* Clear the form */}
