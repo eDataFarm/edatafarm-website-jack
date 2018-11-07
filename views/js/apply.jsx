@@ -40,18 +40,45 @@ class Jobs extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            jobs: []
+            jobs: [],
+            countries: [],
+            country: ''
         };
 
+        this.handleLanguage = this.handleLanguage.bind(this);
+        this.handleClearForm = this.handleClearForm.bind(this);
         this.serverRequest = this.serverRequest.bind(this);
     }
 
     serverRequest() {
-        $.get("http://localhost:3000/api/v1/jobs", res => {
+        let path = "http://localhost:3000/api/v1/jobs/";
+        if (this.state.country !== '') {
+            path = "http://localhost:3000/api/v1/filteredJobs/"+ this.state.country;
+        }
+
+        $.get(path, res => {
             this.setState({
                 jobs: res
             });
         });
+        $.get("http://localhost:3000/api/v1/countries", res => {
+            this.setState({
+                countries: res
+            });
+        });
+    }
+
+    handleLanguage(e) {
+        this.state.country = e.target.value;
+        this.serverRequest();
+        this.render();
+    }
+
+    handleClearForm(e) {
+        e.preventDefault();
+        this.state.country = '';
+        this.serverRequest();
+        this.render();
     }
 
     componentDidMount() {
@@ -62,14 +89,56 @@ class Jobs extends React.Component {
         if (this.state.jobs.length === 0) {
             return (
                 <div className="container">
-                    <h2>There are no open positions at the moment. Please check again later.</h2>
+                    <h2>Jobs</h2>
+
+                    <form className="container-fluid">
+                        <div className="col-md-6" >
+                            <Select title={'Filter By Country'}
+                                    name={'country'}
+                                    options = {this.state.countries}
+                                    value = {this.state.country}
+                                    placeholder = {'Select Country'}
+                                    style={selectStyle}
+                                    handleChange = {this.handleLanguage}
+                            /> {/* Country Filter */}
+                        </div>
+                        <div className="col-md-6">
+                            <Button
+                                action = {this.handleClearForm}
+                                type = {'primary'}
+                                title = {'Clear Filters'}
+                                style={buttonStyle}
+                            /> {/* Clear the form */}
+                        </div>
+                    </form>
+                    <h2>There are no matching positions at the moment. Please clear any filters or check again later.</h2>
                 </div>
             );
         }
         return (
             <div className="container">
                 <h2>Jobs</h2>
-                <p>Let's apply to jobs!!!</p>
+                <form className="container-fluid">
+                    <div className="col-md-6" >
+                        <Select title={'Filter By Country'}
+                                name={'country'}
+                                options = {this.state.countries}
+                                value = {this.state.country}
+                                placeholder = {'Select Country'}
+                                style = {selectStyle}
+                                handleChange = {this.handleLanguage}
+                        /> {/* Country Filter */}
+                    </div>
+                    <div className="col-md-6">
+                        <Button
+                            action = {this.handleClearForm}
+                            type = {'primary'}
+                            title = {'Clear Filters'}
+                            style={buttonStyle}
+                        /> {/* Clear the form */}
+                    </div>
+                </form>
+
                 <div className="row">
                     <div className="container">
                         {this.state.jobs.map(function(job, i) {
@@ -80,6 +149,15 @@ class Jobs extends React.Component {
             </div>
         );
     }
+}
+
+const buttonStyle = {
+    margin : '32px'
+}
+
+const selectStyle = {
+    backgroundRepeat: "no-repeat !important",
+    width: '1200px'
 }
 
 class Job extends React.Component {

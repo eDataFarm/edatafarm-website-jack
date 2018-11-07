@@ -123,7 +123,7 @@ func main() {
 	initDB()
 
 	// Initialize the jobs array
-	jobs = getJobs()
+	jobs = getJobs("")
 
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
@@ -145,8 +145,10 @@ func main() {
 		api.POST("/users", CreateUser)
 		api.GET("/jobs/:jobID", JobHandler)
 		api.GET("/jobs", JobsHandler)
+		api.GET("/filteredJobs/:country", FilteredJobsHandler)
 		api.POST("/jobs", CreateJob)
 		api.POST("/jobs/apply/:jobID", ApplyJob)
+		api.GET("/countries", CountriesHandler)
 	}
 
 	// Start and run the server
@@ -334,12 +336,15 @@ func CreateUser(c *gin.Context) {
 	}
 }
 
-func getJobs() []*Job {
+func getJobs(country string) []*Job {
 	jobs := make([]*Job, 0, 50)
 
 	fmt.Println("Querying Jobs")
 	targetColumnNames := structs.Names(&Job{})
 	whereClause := fmt.Sprintf("expiration > '%s'", time.Now().Format("2006-01-02T15:04:05-0700"))
+	if country != "" {
+		whereClause += fmt.Sprintf(" and country = '%s'", country)
+	}
 	queryJobs := buildSelectStatement("jobs", targetColumnNames, whereClause)
 	rows, err := DBInstance.DB.Query(queryJobs)
 	if err != nil {
@@ -365,10 +370,13 @@ func getJobs() []*Job {
 
 // JobsHandler retrieves a list of available jobs
 func JobsHandler(c *gin.Context) {
-	c.Header("Content-Type", "application/json")
+	jobs = getJobs("")
+	c.JSON(http.StatusOK, jobs)
+}
 
-	jobs = getJobs()
-
+func FilteredJobsHandler(c *gin.Context) {
+	country := c.Param("country")
+	jobs = getJobs(country)
 	c.JSON(http.StatusOK, jobs)
 }
 
@@ -376,13 +384,7 @@ func JobsHandler(c *gin.Context) {
 func JobHandler(c *gin.Context) {
 	jobID := c.Param("jobID")
 	job := new(Job)
-
-	countries, err := ioutil.ReadFile("config/countries")
-	if err != nil {
-		log.Fatal("Cannot load countries file")
-	}
-	countriesStr := strings.Split(string(countries), "\n")
-	newJob := NewJob{job, countriesStr}
+	newJob := NewJob{job, getCountries()}
 
 	if jobID == "undefined" {
 		c.JSON(http.StatusOK, newJob)
@@ -401,7 +403,7 @@ func JobHandler(c *gin.Context) {
 	whereClause := fmt.Sprintf("id = '%s';", jobID)
 	queryUser := buildSelectStatement("jobs", targetColumnNames, whereClause)
 	var languages string
-	err = DBInstance.DB.QueryRow(queryUser).
+	err := DBInstance.DB.QueryRow(queryUser).
 		Scan(&job.Id, &job.Title, &job.Expiration, &job.Description, &job.Applicants, &job.Country, &languages)
 
 	if job.Id == 0 {
@@ -476,7 +478,7 @@ func ApplyJob(c *gin.Context) {
 		}
 
 		// get updated jobs
-		jobs = getJobs()
+		jobs = getJobs("")
 
 		for i := 0; i < len(jobs); i++ {
 			if jobs[i].Id == jobID {
@@ -521,6 +523,10 @@ func ApplyJob(c *gin.Context) {
 	}
 }
 
+func CountriesHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, getCountries())
+}
+
 func getValueString(numberOfColumns int) string {
 	values := "$1"
 	for i := 1; i < numberOfColumns; i++ {
@@ -537,4 +543,12 @@ func buildSelectStatement(targetTableName string, targetColumnNames []string, wh
 func buildInsertStatement(targetTableName string, targetColumnNames []string) string {
 	return fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s) returning id;",
 		targetTableName, strings.Join(targetColumnNames, ","), getValueString(len(targetColumnNames)))
+}
+
+func getCountries() []string {
+	countries, err := ioutil.ReadFile("config/countries")
+	if err != nil {
+		log.Fatal("Cannot load countries file")
+	}
+	return strings.Split(string(countries), "\n")
 }
