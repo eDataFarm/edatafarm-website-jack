@@ -40,7 +40,7 @@ class User extends React.Component {
         if (this.state.admin) {
             if (this.state.user !== "") {
                 return (
-                    <div className="col-md-6">
+                    <div className="container">
                         <FormContainer user={this.state.user}/>
                     </div>
                 );

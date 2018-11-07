@@ -43,7 +43,7 @@ class NewJob extends React.Component {
     render() {
         if (this.state.admin) {
             return (
-                <div>
+                <div className="container">
                     <NewJobContainer job={this.state.job}/>
                 </div>
             );
