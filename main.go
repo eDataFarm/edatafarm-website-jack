@@ -537,10 +537,8 @@ func getValueString(numberOfColumns int) string {
 }
 
 func buildSelectStatement(targetTableName string, targetColumnNames []string, whereClause string) string {
-	return_s := fmt.Sprintf("SELECT %s from %s WHERE %s ORDER BY id;", strings.Join(targetColumnNames, ","),
+	return fmt.Sprintf("SELECT %s from %s WHERE %s ORDER BY id;", strings.Join(targetColumnNames, ","),
 		targetTableName, whereClause)
-	log.Println(return_s)
-	return return_s
 }
 
 func buildInsertStatement(targetTableName string, targetColumnNames []string) string {

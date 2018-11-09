@@ -16,6 +16,8 @@ class Apply extends React.Component {
                     user: true
                 });
             }
+        }).fail((jqXHR, textStatus, errorThrown) => {
+            alert(textStatus + ': ' + errorThrown);
         });
     }
 
@@ -25,14 +27,7 @@ class Apply extends React.Component {
 
 
     render() {
-        if (this.state.user) {
-            return <Jobs />;
-        }
-        return (
-            <div className="container">
-                <FormContainer />
-            </div>
-        );
+        return <Jobs />;
     }
 }
 
