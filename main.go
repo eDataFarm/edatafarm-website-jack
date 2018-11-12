@@ -5,12 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/auth0/go-jwt-middleware"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/fatih/structs"
-	"github.com/gin-gonic/contrib/static"
-	"github.com/gin-gonic/gin"
-	_ "github.com/lib/pq"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -20,6 +14,14 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/auth0/go-jwt-middleware"
+	"github.com/dgrijalva/jwt-go"
+	"github.com/fatih/structs"
+	"github.com/gin-gonic/contrib/static"
+	"github.com/gin-gonic/gin"
+	_ "github.com/golang-migrate/migrate/source/file"
+	_ "github.com/lib/pq"
 )
 
 type Response struct {
@@ -209,19 +211,56 @@ func authMiddleware() gin.HandlerFunc {
 	}
 }
 
-// Initiaize the DBInstance singleton for server connections
+func mustGetenv(k string) string {
+	v := os.Getenv(k)
+	if v == "" {
+		log.Panicf("%s environment variable not set.", k)
+	}
+	return v
+}
+
+// Initialize the DBInstance singleton for server connections
 func initDB() {
 	dbOnce.Do(func () {
-		dbinfo := fmt.Sprintf("dbname=%s sslmode=disable", DBName)
-		db, err := sql.Open("postgres", dbinfo)
+		var (
+			password       = os.Getenv("CLOUDSQL_PASSWORD") // NOTE: password may be empty
+			socket         = os.Getenv("CLOUDSQL_SOCKET_PREFIX")
+		)
 
+		// MySQL Connection, comment out to use PostgreSQL.
+		// connection string format: USER:PASSWORD@unix(/cloudsql/)PROJECT_ID:REGION_ID:INSTANCE_ID/[DB_NAME]
+		//dbURI := fmt.Sprintf("%s:%s@unix(%s/%s)/", user, password, socket, connectionName)
+		//conn, err := sql.Open("mysql", dbURI)
+
+		// PostgresSQL Connection, uncomment to use.
+		// connection string format: user=USER password=PASSWORD host=/cloudsql/PROJECT_ID:REGION_ID:INSTANCE_ID/[ dbname=DB_NAME]
+		dbURI := fmt.Sprintf("dbname=%s sslmode=disable", DBName)
+
+		// /cloudsql is used on App Engine.
+		if socket != "" {
+			connectionName := mustGetenv("CLOUDSQL_CONNECTION_NAME")
+			user           := mustGetenv("CLOUDSQL_USER")
+			dbURI = fmt.Sprintf("user=%s password=%s host=/cloudsql/%s dbname=%s", user, password, connectionName, DBName)
+			socket = "/cloudsql"
+		}
+
+		db, err := sql.Open("postgres", dbURI)
 		if err != nil {
 			log.Fatalln("Failed to open connection to db: ", err.Error())
 		}
 
-		DBInstance = &DBType{DB: db}
+		// TODO: Fix migrations
+		//driver, _ := postgres.WithInstance(db, &postgres.Config{})
+		//m, err := migrate.NewWithDatabaseInstance(
+		//	"file:///Users/dwamola/go/src/github.com/dawa/edatafarmdb/migrations",
+		//	"postgres", driver)
+		//
+		//// Migrate all the way up ...
+		//if err := m.Up(); err != nil {
+		//	log.Fatal(err)
+		//}
 
-		// TODO: Migrate the schema
+		DBInstance = &DBType{DB: db}
 	})
 }
 

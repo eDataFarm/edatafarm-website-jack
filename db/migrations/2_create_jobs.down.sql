@@ -1,0 +1,6 @@
+DROP INDEX IF EXISTS user_job_index;
+
+DROP TABLE IF EXISTS user_job;
+
+DROP TABLE IF EXISTS jobs;
+
