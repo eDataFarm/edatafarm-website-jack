@@ -152,7 +152,16 @@ func main() {
 	}
 
 	// Start and run the server
-	router.Run(":3000")
+	// [START setting_port]
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+		log.Printf("Defaulting to port %s", port)
+	}
+
+	log.Printf("Listening on port %s", port)
+	// [END setting_port]
+	router.Run(":" + port)
 }
 
 func getPemCert(token *jwt.Token) (string, error) {
