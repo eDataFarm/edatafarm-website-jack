@@ -23,3 +23,6 @@ env_variables:
   CLOUDSQL_USER: postgres
   CLOUDSQL_PASSWORD: ccF8mOFOF49ky59j
   CLOUDSQL_SOCKET_PREFIX: gcp
+
+beta_settings:
+  cloud_sql_instances: edatafarm-222505:us-central1:edatafarm
