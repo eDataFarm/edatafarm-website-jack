@@ -209,7 +209,6 @@ func authMiddleware() gin.HandlerFunc {
 		}
 	}
 }
-
 func mustGetenv(k string) string {
 	v := os.Getenv(k)
 	if v == "" {
@@ -217,7 +216,30 @@ func mustGetenv(k string) string {
 	}
 	return v
 }
+func createTable() error {
+	createUsers, err := ioutil.ReadFile("db/migrations/1_create_users.up.sql")
+	if err != nil {
+		return err
+	}
 
+	stmt := string(createUsers)
+
+	if _, err := DBInstance.DB.Exec(stmt); err != nil {
+		return err
+	}
+
+	createJobs, err := ioutil.ReadFile("db/migrations/2_create_jobs.up.sql")
+	if err != nil {
+		return err
+	}
+
+	stmt = string(createJobs)
+	if _, err := DBInstance.DB.Exec(stmt); err != nil {
+		return err
+	}
+
+	return err
+}
 // Initialize the DBInstance singleton for server connections
 func initDB() {
 	dbOnce.Do(func () {
@@ -233,7 +255,7 @@ func initDB() {
 
 		// PostgresSQL Connection, uncomment to use.
 		// connection string format: user=USER password=PASSWORD host=/cloudsql/PROJECT_ID:REGION_ID:INSTANCE_ID/[ dbname=DB_NAME]
-		dbURI := fmt.Sprintf("dbname=%s sslmode=disable", DBName)
+		dbURI := fmt.Sprintf("user=postgres password=%s dbname=%s sslmode=disable", password, DBName)
 
 		// /cloudsql is used on App Engine.
 		if socket != "" {
@@ -248,6 +270,15 @@ func initDB() {
 			log.Fatalln("Failed to open connection to db: ", err.Error())
 		}
 
+		DBInstance = &DBType{DB: db}
+
+		// Ensure the table exists.
+		// Running an SQL query also checks the connection to the PostgreSQL server
+		// is authenticated and valid.
+		if err := createTable(); err != nil {
+			log.Fatal(err)
+		}
+
 		// TODO: Fix migrations
 		//driver, _ := postgres.WithInstance(db, &postgres.Config{})
 		//m, err := migrate.NewWithDatabaseInstance(
@@ -259,7 +290,6 @@ func initDB() {
 		//	log.Fatal(err)
 		//}
 
-		DBInstance = &DBType{DB: db}
 	})
 }
 

@@ -1,5 +1,4 @@
-SET timezone = 'America/Los_Angeles';
-CREATE TABLE userinfo
+CREATE TABLE IF NOT EXISTS userinfo
     (
         id serial primary key,
         name character varying(100) NOT NULL,

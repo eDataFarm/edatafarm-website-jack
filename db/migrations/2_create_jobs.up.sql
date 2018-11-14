@@ -1,4 +1,4 @@
-CREATE TABLE jobs
+CREATE TABLE IF NOT EXISTS jobs
     (
         id serial primary key,
         title character varying(100) NOT NULL,
@@ -11,10 +11,10 @@ CREATE TABLE jobs
     )
     WITH (OIDS=FALSE);
 
-CREATE TABLE user_job
+CREATE TABLE IF NOT EXISTS user_job
     (
         user_id integer REFERENCES userinfo(id),
         job_id integer REFERENCES jobs(id)
     );
 
-CREATE UNIQUE INDEX user_job_index ON user_job (user_id, job_id);
+CREATE UNIQUE INDEX IF NOT EXISTS user_job_index ON user_job (user_id, job_id);
