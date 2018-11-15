@@ -1,0 +1,33 @@
+{
+  "name": "edatafarm",
+  "version": "1.0.0",
+  "description": "edatafarm website",
+  "main": "index.js",
+  "dependencies": {
+    "@babel/polyfill": "^7.0.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.1.5",
+    "@babel/core": "^7.1.6",
+    "@babel/preset-env": "^7.1.6",
+    "@babel/preset-react": "^7.0.0",
+    "babel-cli": "^6.26.0"
+  },
+  "scripts": {
+    "build": "babel views -d lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dawa/edatafarm.git"
+  },
+  "keywords": [
+    "machine",
+    "learning"
+  ],
+  "author": "Davis Wamola",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dawa/edatafarm/issues"
+  },
+  "homepage": "https://github.com/dawa/edatafarm#readme"
+}
