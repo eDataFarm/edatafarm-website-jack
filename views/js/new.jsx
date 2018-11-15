@@ -17,8 +17,6 @@ class NewJob extends React.Component {
                     admin: true
                 });
             }
-        }).fail((jqXHR, textStatus, errorThrown) => {
-            alert(textStatus + ': ' + errorThrown);
         });
 
         let jobID;
