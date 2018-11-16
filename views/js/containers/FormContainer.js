@@ -144,7 +144,8 @@ function (_React$Component) {
 
       $.post("http://localhost:3000/api/v1/users", userData, function (response) {
         _this2.setState({
-          users: response
+          user: response,
+          loadedUser: false
         });
 
         alert('Application form was submitted');

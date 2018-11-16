@@ -86,9 +86,8 @@ class FormContainer extends React.Component {
         }
 
         $.post("http://localhost:3000/api/v1/users", userData, response => {
-            this.setState({ users: response });
+            this.setState({ user: response, loadedUser: false });
             alert('Application form was submitted');
-            window.location.reload();
         }).fail((jqXHR, textStatus, errorThrown) => {
             alert(textStatus + ': ' + errorThrown);
         });
@@ -146,6 +145,7 @@ class FormContainer extends React.Component {
             }
             this.state.loadedUser = true;
         }
+        console.log("newUser:", this.state.newUser);
 
         return (
             <form className="container-fluid" onSubmit={this.handleFormSubmit}>

@@ -31,7 +31,7 @@ function (_React$Component) {
     _this = _possibleConstructorReturn(this, _getPrototypeOf(User).call(this, props));
     _this.state = {
       admin: false,
-      user: ""
+      user: ''
     };
     _this.serverRequest = _this.serverRequest.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     return _this;

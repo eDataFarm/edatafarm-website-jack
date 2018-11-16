@@ -3,7 +3,7 @@ class User extends React.Component {
         super(props);
         this.state = {
             admin: false,
-            user: ""
+            user: ''
         };
 
         this.serverRequest = this.serverRequest.bind(this);
