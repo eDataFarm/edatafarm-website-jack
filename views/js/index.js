@@ -1,8 +1,17 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import '../css/index.css';
-import App from './App';
-import registerServiceWorker from './registerServiceWorker';
+"use strict";
 
-ReactDOM.render(<App />, document.getElementById('root'));
-registerServiceWorker();
+var _react = _interopRequireDefault(require("react"));
+
+var _reactDom = _interopRequireDefault(require("react-dom"));
+
+require("../css/index.css");
+
+var _App = _interopRequireDefault(require("./App"));
+
+var _registerServiceWorker = _interopRequireDefault(require("./registerServiceWorker"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+_reactDom.default.render(_react.default.createElement(_App.default, null), document.getElementById('root'));
+
+(0, _registerServiceWorker.default)();

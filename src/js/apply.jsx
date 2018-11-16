@@ -16,8 +16,6 @@ class Apply extends React.Component {
                     user: true
                 });
             }
-        }).fail((jqXHR, textStatus, errorThrown) => {
-            alert(textStatus + ': ' + errorThrown);
         });
     }
 

@@ -48,8 +48,6 @@ function (_React$Component) {
             user: true
           });
         }
-      }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus + ': ' + errorThrown);
       });
     }
   }, {
