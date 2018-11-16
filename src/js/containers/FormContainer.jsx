@@ -79,7 +79,6 @@ class FormContainer extends React.Component {
     }
 
     serverRequest(userData) {
-        console.log("UserData:", userData);
         let email = localStorage.getItem("email");
         if (email) {
             this.state.newUser.email = email
@@ -87,6 +86,7 @@ class FormContainer extends React.Component {
 
         $.post("http://localhost:3000/api/v1/users", userData, response => {
             this.setState({ user: response, loadedUser: false });
+            console.log("UserData:", response);
             alert('Application form was submitted');
         }).fail((jqXHR, textStatus, errorThrown) => {
             alert(textStatus + ': ' + errorThrown);
@@ -144,8 +144,8 @@ class FormContainer extends React.Component {
                 }
             }
             this.state.loadedUser = true;
+            console.log("newUser:", this.state.newUser);
         }
-        console.log("newUser:", this.state.newUser);
 
         return (
             <form className="container-fluid" onSubmit={this.handleFormSubmit}>

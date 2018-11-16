@@ -135,7 +135,6 @@ function (_React$Component) {
     value: function serverRequest(userData) {
       var _this2 = this;
 
-      console.log("UserData:", userData);
       var email = localStorage.getItem("email");
 
       if (email) {
@@ -148,8 +147,8 @@ function (_React$Component) {
           loadedUser: false
         });
 
+        console.log("UserData:", response);
         alert('Application form was submitted');
-        window.location.reload();
       }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus + ': ' + errorThrown);
       });
@@ -214,6 +213,7 @@ function (_React$Component) {
         }
 
         this.state.loadedUser = true;
+        console.log("newUser:", this.state.newUser);
       }
 
       return React.createElement("form", {

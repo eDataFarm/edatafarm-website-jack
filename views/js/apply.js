@@ -60,8 +60,6 @@ function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      console.log("LOGGEDIN", this.state.loggedIn);
-
       if (this.state.loggedIn) {
         return React.createElement("div", {
           className: "container"

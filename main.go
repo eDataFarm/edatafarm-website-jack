@@ -406,7 +406,7 @@ func CreateUser(c *gin.Context) {
 			return
 		}
 
-		fmt.Println("last inserted id =", user.Id)
+		fmt.Println("last inserted user id =", user.Id)
 		// return a pointer to the new user
 		c.JSON(http.StatusOK, &user)
 	} else {
