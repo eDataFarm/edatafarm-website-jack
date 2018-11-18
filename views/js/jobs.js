@@ -79,10 +79,14 @@ function (_React$Component2) {
     _this3.state = {
       jobs: [],
       countries: [],
-      country: ''
+      country: '',
+      languages: [],
+      language: ''
     };
+    _this3.handleCountry = _this3.handleCountry.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.handleLanguage = _this3.handleLanguage.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
-    _this3.handleClearForm = _this3.handleClearForm.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.handleClearCountry = _this3.handleClearCountry.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
+    _this3.handleClearLanguage = _this3.handleClearLanguage.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     _this3.serverRequest = _this3.serverRequest.bind(_assertThisInitialized(_assertThisInitialized(_this3)));
     return _this3;
   }
@@ -92,35 +96,40 @@ function (_React$Component2) {
     value: function serverRequest() {
       var _this4 = this;
 
-      var path = "http://localhost:3000/api/v1/jobs/";
-
-      if (this.state.country !== '') {
-        path = "http://localhost:3000/api/v1/filteredJobs/" + this.state.country;
-      }
-
+      var path = "http://localhost:3000/api/v1/jobs/?country=" + this.state.country + "&language=" + this.state.language;
       $.get(path, function (res) {
         _this4.setState({
           jobs: res
         });
       });
-      $.get("http://localhost:3000/api/v1/countries", function (res) {
-        _this4.setState({
-          countries: res
-        });
-      });
     }
   }, {
-    key: "handleLanguage",
-    value: function handleLanguage(e) {
+    key: "handleCountry",
+    value: function handleCountry(e) {
       this.state.country = e.target.value;
       this.serverRequest();
       this.render();
     }
   }, {
-    key: "handleClearForm",
-    value: function handleClearForm(e) {
+    key: "handleLanguage",
+    value: function handleLanguage(e) {
+      this.state.language = e.target.value;
+      this.serverRequest();
+      this.render();
+    }
+  }, {
+    key: "handleClearCountry",
+    value: function handleClearCountry(e) {
       e.preventDefault();
       this.state.country = '';
+      this.serverRequest();
+      this.render();
+    }
+  }, {
+    key: "handleClearLanguage",
+    value: function handleClearLanguage(e) {
+      e.preventDefault();
+      this.state.language = '';
       this.serverRequest();
       this.render();
     }
@@ -128,6 +137,27 @@ function (_React$Component2) {
     key: "componentDidMount",
     value: function componentDidMount() {
       this.serverRequest();
+    }
+  }, {
+    key: "setup",
+    value: function setup() {
+      var _this5 = this;
+
+      $.get("http://localhost:3000/api/v1/countries", function (res) {
+        _this5.setState({
+          countries: res
+        });
+      });
+      $.get("http://localhost:3000/api/v1/languages", function (res) {
+        _this5.setState({
+          languages: res
+        });
+      });
+    }
+  }, {
+    key: "componentWillMount",
+    value: function componentWillMount() {
+      this.setup();
     }
   }, {
     key: "render",
@@ -146,15 +176,32 @@ function (_React$Component2) {
           value: this.state.country,
           placeholder: 'Select Country',
           style: selectStyle,
+          handleChange: this.handleCountry
+        }), " "), React.createElement("div", {
+          className: "col-md-6"
+        }, React.createElement(Button, {
+          action: this.handleClearCountry,
+          type: 'primary',
+          title: 'Clear Filter',
+          style: buttonStyle
+        }), " "), React.createElement("div", {
+          className: "col-md-6"
+        }, React.createElement(Select, {
+          title: 'Filter By Language',
+          name: 'language',
+          options: this.state.languages,
+          value: this.state.language,
+          placeholder: 'Select Language',
+          style: selectStyle,
           handleChange: this.handleLanguage
         }), " "), React.createElement("div", {
           className: "col-md-6"
         }, React.createElement(Button, {
-          action: this.handleClearForm,
+          action: this.handleClearLanguage,
           type: 'primary',
-          title: 'Clear Filters',
+          title: 'Clear Filter',
           style: buttonStyle
-        }), " ")), React.createElement("h2", null, "There are no matching positions at the moment. Please clear any filters or check again later."), React.createElement("div", {
+        }), " ")), React.createElement("h3", null, "There are no matching positions at the moment. Please clear any filters or check again later."), React.createElement("div", {
           className: "container"
         }, React.createElement("a", {
           className: "x-btn btn_style_rec x-btn-global",
@@ -181,7 +228,7 @@ function (_React$Component2) {
       }), " "), React.createElement("div", {
         className: "col-md-6"
       }, React.createElement(Button, {
-        action: this.handleClearForm,
+        action: this.handleClearLanguage,
         type: 'primary',
         title: 'Clear Filters',
         style: buttonStyle
@@ -219,18 +266,18 @@ function (_React$Component3) {
   _inherits(Job, _React$Component3);
 
   function Job(props) {
-    var _this5;
+    var _this6;
 
     _classCallCheck(this, Job);
 
-    _this5 = _possibleConstructorReturn(this, _getPrototypeOf(Job).call(this, props));
-    _this5.state = {
+    _this6 = _possibleConstructorReturn(this, _getPrototypeOf(Job).call(this, props));
+    _this6.state = {
       applied: "",
       jobs: []
     };
-    _this5.apply = _this5.apply.bind(_assertThisInitialized(_assertThisInitialized(_this5)));
-    _this5.serverRequest = _this5.serverRequest.bind(_assertThisInitialized(_assertThisInitialized(_this5)));
-    return _this5;
+    _this6.apply = _this6.apply.bind(_assertThisInitialized(_assertThisInitialized(_this6)));
+    _this6.serverRequest = _this6.serverRequest.bind(_assertThisInitialized(_assertThisInitialized(_this6)));
+    return _this6;
   }
 
   _createClass(Job, [{
@@ -242,14 +289,14 @@ function (_React$Component3) {
   }, {
     key: "serverRequest",
     value: function serverRequest(job) {
-      var _this6 = this;
+      var _this7 = this;
 
       var email = localStorage.getItem("email");
       $.post("http://localhost:3000/api/v1/jobs/apply/" + job.Id, {
         applied: 1,
         email: email
       }, function (res) {
-        _this6.setState({
+        _this7.setState({
           applied: "Applied!",
           jobs: res
         });

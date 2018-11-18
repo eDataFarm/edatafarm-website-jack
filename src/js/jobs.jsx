@@ -35,47 +35,73 @@ class Jobs extends React.Component {
         this.state = {
             jobs: [],
             countries: [],
-            country: ''
+            country: '',
+            languages: [],
+            language: ''
         };
 
+        this.handleCountry = this.handleCountry.bind(this);
         this.handleLanguage = this.handleLanguage.bind(this);
-        this.handleClearForm = this.handleClearForm.bind(this);
+        this.handleClearCountry = this.handleClearCountry.bind(this);
+        this.handleClearLanguage = this.handleClearLanguage.bind(this);
         this.serverRequest = this.serverRequest.bind(this);
     }
 
     serverRequest() {
-        let path = "http://localhost:3000/api/v1/jobs/";
-        if (this.state.country !== '') {
-            path = "http://localhost:3000/api/v1/filteredJobs/"+ this.state.country;
-        }
+        let path = "http://localhost:3000/api/v1/jobs/?country=" + this.state.country + "&language=" + this.state.language;
 
         $.get(path, res => {
             this.setState({
                 jobs: res
             });
         });
-        $.get("http://localhost:3000/api/v1/countries", res => {
-            this.setState({
-                countries: res
-            });
-        });
     }
 
-    handleLanguage(e) {
+    handleCountry(e) {
         this.state.country = e.target.value;
         this.serverRequest();
         this.render();
     }
 
-    handleClearForm(e) {
+    handleLanguage(e) {
+        this.state.language = e.target.value;
+        this.serverRequest();
+        this.render();
+    }
+
+    handleClearCountry(e) {
         e.preventDefault();
         this.state.country = '';
         this.serverRequest();
         this.render();
     }
 
+    handleClearLanguage(e) {
+        e.preventDefault();
+        this.state.language = '';
+        this.serverRequest();
+        this.render();
+    }
+
     componentDidMount() {
         this.serverRequest();
+    }
+
+    setup() {
+        $.get("http://localhost:3000/api/v1/countries", res => {
+            this.setState({
+                countries: res
+            });
+        });
+        $.get("http://localhost:3000/api/v1/languages", res => {
+            this.setState({
+                languages: res
+            });
+        });
+    }
+
+    componentWillMount() {
+        this.setup();
     }
 
     render() {
@@ -92,19 +118,37 @@ class Jobs extends React.Component {
                                     value = {this.state.country}
                                     placeholder = {'Select Country'}
                                     style={selectStyle}
-                                    handleChange = {this.handleLanguage}
+                                    handleChange = {this.handleCountry}
                             /> {/* Country Filter */}
                         </div>
                         <div className="col-md-6">
                             <Button
-                                action = {this.handleClearForm}
+                                action = {this.handleClearCountry}
                                 type = {'primary'}
-                                title = {'Clear Filters'}
+                                title = {'Clear Filter'}
                                 style={buttonStyle}
-                            /> {/* Clear the form */}
+                            /> {/* Clear country filter */}
+                        </div>
+                        <div className="col-md-6" >
+                            <Select title={'Filter By Language'}
+                                    name={'language'}
+                                    options = {this.state.languages}
+                                    value = {this.state.language}
+                                    placeholder = {'Select Language'}
+                                    style={selectStyle}
+                                    handleChange = {this.handleLanguage}
+                            /> {/* Language Filter */}
+                        </div>
+                        <div className="col-md-6">
+                            <Button
+                                action = {this.handleClearLanguage}
+                                type = {'primary'}
+                                title = {'Clear Filter'}
+                                style={buttonStyle}
+                            /> {/* Clear language filter */}
                         </div>
                     </form>
-                    <h2>There are no matching positions at the moment. Please clear any filters or check again later.</h2>
+                    <h3>There are no matching positions at the moment. Please clear any filters or check again later.</h3>
                     <div className="container">
                         <a className={"x-btn btn_style_rec x-btn-global"}
                            href={"../../user/index.html"}
@@ -132,7 +176,7 @@ class Jobs extends React.Component {
                     </div>
                     <div className="col-md-6">
                         <Button
-                            action = {this.handleClearForm}
+                            action = {this.handleClearLanguage}
                             type = {'primary'}
                             title = {'Clear Filters'}
                             style={buttonStyle}

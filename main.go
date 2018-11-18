@@ -124,7 +124,7 @@ func main() {
 	initDB()
 
 	// Initialize the jobs array
-	jobs = getJobs("")
+	jobs = getJobs("", "")
 
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
@@ -146,10 +146,10 @@ func main() {
 		api.POST("/users", CreateUser)
 		api.GET("/jobs/:jobID", JobHandler)
 		api.GET("/jobs", JobsHandler)
-		api.GET("/filteredJobs/:country", FilteredJobsHandler)
 		api.POST("/jobs", CreateJob)
 		api.POST("/jobs/apply/:jobID", ApplyJob)
 		api.GET("/countries", CountriesHandler)
+		api.GET("/languages", LanguagesHandler)
 	}
 
 	// Start and run the server
@@ -273,23 +273,10 @@ func initDB() {
 		DBInstance = &DBType{DB: db}
 
 		// Ensure the table exists.
-		// Running an SQL query also checks the connection to the PostgreSQL server
-		// is authenticated and valid.
+		// Running an SQL query also checks the connection to the PostgreSQL server is authenticated and valid.
 		if err := createTable(); err != nil {
 			log.Fatal(err)
 		}
-
-		// TODO: Fix migrations
-		//driver, _ := postgres.WithInstance(db, &postgres.Config{})
-		//m, err := migrate.NewWithDatabaseInstance(
-		//	"file:///Users/dwamola/go/src/github.com/dawa/edatafarmdb/migrations",
-		//	"postgres", driver)
-		//
-		//// Migrate all the way up ...
-		//if err := m.Up(); err != nil {
-		//	log.Fatal(err)
-		//}
-
 	})
 }
 
@@ -414,7 +401,7 @@ func CreateUser(c *gin.Context) {
 	}
 }
 
-func getJobs(country string) []*Job {
+func getJobs(country, language string) []*Job {
 	jobs := make([]*Job, 0, 50)
 
 	fmt.Println("Querying Jobs")
@@ -422,6 +409,9 @@ func getJobs(country string) []*Job {
 	whereClause := fmt.Sprintf("expiration > '%s'", time.Now().Format("2006-01-02T15:04:05-0700"))
 	if country != "" {
 		whereClause += fmt.Sprintf(" and country = '%s'", country)
+	}
+	if language != "" {
+		whereClause += fmt.Sprintf(" and languages like '%%%s%%'", language)
 	}
 	queryJobs := buildSelectStatement("jobs", targetColumnNames, whereClause)
 	rows, err := DBInstance.DB.Query(queryJobs)
@@ -448,13 +438,9 @@ func getJobs(country string) []*Job {
 
 // JobsHandler retrieves a list of available jobs
 func JobsHandler(c *gin.Context) {
-	jobs = getJobs("")
-	c.JSON(http.StatusOK, jobs)
-}
-
-func FilteredJobsHandler(c *gin.Context) {
-	country := c.Param("country")
-	jobs = getJobs(country)
+	country := c.DefaultQuery("country", "")
+	language := c.DefaultQuery("language", "")
+	jobs = getJobs(country, language)
 	c.JSON(http.StatusOK, jobs)
 }
 
@@ -556,7 +542,7 @@ func ApplyJob(c *gin.Context) {
 		}
 
 		// get updated jobs
-		jobs = getJobs("")
+		jobs = getJobs("", "")
 
 		for i := 0; i < len(jobs); i++ {
 			if jobs[i].Id == jobID {
@@ -605,6 +591,10 @@ func CountriesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, getCountries())
 }
 
+func LanguagesHandler(c *gin.Context) {
+	c.JSON(http.StatusOK, getLanguages())
+}
+
 func getValueString(numberOfColumns int) string {
 	values := "$1"
 	for i := 1; i < numberOfColumns; i++ {
@@ -629,4 +619,12 @@ func getCountries() []string {
 		log.Fatal("Cannot load countries file")
 	}
 	return strings.Split(string(countries), "\n")
+}
+
+func getLanguages() []string {
+	languages, err := ioutil.ReadFile("config/languages")
+	if err != nil {
+		log.Fatal("Cannot load languages file")
+	}
+	return strings.Split(string(languages), "\n")
 }
