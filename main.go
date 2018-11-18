@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -21,8 +20,8 @@ import (
 	"github.com/fatih/structs"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 	_ "github.com/lib/pq"
+	"github.com/spf13/viper"
 )
 
 type Response struct {
@@ -155,19 +154,19 @@ func main() {
 	}
 
 	// Read in a toml file or the 	env variables
-	environment := os.Getenv("ENVIRONMENT")
-	if environment == "DEV" || environment == "" {
+	environment := os.Getenv("APP_ENVIRONMENT")
+	if environment == "dev" || environment == "" {
 		viper.SetConfigName("development")
 		viper.SetConfigType("toml")
-		viper.AddConfigPath(filepath.Dir("config"))
-		viper.ReadInConfig()
+		viper.AddConfigPath("config")
+		if err := viper.ReadInConfig(); err != nil {
+			log.Println("Configuration file not found:", err.Error())
+		}
 	} else {
 		viper.AutomaticEnv()
 	}
 
 	// [START setting_port]
-	// To add a default value :
-	viper.SetDefault("PORT", "3000")
 	//To get from the toml file or env var
 	port := viper.GetString("PORT")
 	log.Printf("Listening on port %s", port)

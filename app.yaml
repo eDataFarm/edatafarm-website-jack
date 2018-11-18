@@ -25,6 +25,7 @@ env_variables:
   CLOUDSQL_SOCKET_PREFIX: gcp
   # Switch GIN to "release" mode in production.
   GIN_MODE: release
+  APP_ENVIRONMENT: staging
 
 beta_settings:
   cloud_sql_instances: edata-222505:us-central1:edatafarm
