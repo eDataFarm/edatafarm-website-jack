@@ -10,7 +10,7 @@ class Openings extends React.Component {
 
     serverRequest() {
         let email = localStorage.getItem("email");
-        $.get("http://localhost:3000/api/v1/users/" + email, res => {
+        $.get("../api/v1/users/" + email, res => {
             if (res.Admin === true) {
                 this.setState({
                     admin: true
@@ -47,7 +47,7 @@ class JobOpenings extends React.Component {
     }
 
     serverRequest() {
-        $.get("http://localhost:3000/api/v1/jobs", res => {
+        $.get("../api/v1/jobs", res => {
             this.setState({
                 jobs: res
             });
@@ -102,7 +102,7 @@ class JobListing extends React.Component {
 
     serverRequest(job) {
         $.post(
-            "http://localhost:3000/api/v1/applicants/" + job.Id,
+            "../api/v1/applicants/" + job.Id,
             res => {
                 this.setState({users: res });
                 this.props.users = res;

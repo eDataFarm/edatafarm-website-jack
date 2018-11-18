@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -20,6 +21,7 @@ import (
 	"github.com/fatih/structs"
 	"github.com/gin-gonic/contrib/static"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	_ "github.com/lib/pq"
 )
 
@@ -152,16 +154,26 @@ func main() {
 		api.GET("/languages", LanguagesHandler)
 	}
 
-	// Start and run the server
-	// [START setting_port]
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3000"
-		log.Printf("Defaulting to port %s", port)
+	// Read in a toml file or the 	env variables
+	environment := os.Getenv("ENVIRONMENT")
+	if environment == "DEV" || environment == "" {
+		viper.SetConfigName("development")
+		viper.SetConfigType("toml")
+		viper.AddConfigPath(filepath.Dir("config"))
+		viper.ReadInConfig()
+	} else {
+		viper.AutomaticEnv()
 	}
 
+	// [START setting_port]
+	// To add a default value :
+	viper.SetDefault("PORT", "3000")
+	//To get from the toml file or env var
+	port := viper.GetString("PORT")
 	log.Printf("Listening on port %s", port)
 	// [END setting_port]
+
+	// Start and run the server
 	router.Run(":" + port)
 }
 

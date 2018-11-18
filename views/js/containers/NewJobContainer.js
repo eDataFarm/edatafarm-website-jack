@@ -120,7 +120,7 @@ function (_React$Component) {
   }, {
     key: "serverRequest",
     value: function serverRequest(jobData) {
-      $.post("http://localhost:3000/api/v1/jobs", jobData, function (response) {
+      $.post("../api/v1/jobs", jobData, function (response) {
         alert('Job was submitted');
         window.location.assign('/admin');
       }).fail(function (jqXHR, textStatus, errorThrown) {

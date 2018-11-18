@@ -141,7 +141,7 @@ function (_React$Component) {
         this.state.newUser.email = email;
       }
 
-      $.post("http://localhost:3000/api/v1/users", userData, function (response) {
+      $.post("../api/v1/users", userData, function (response) {
         _this2.setState({
           user: response,
           loadedUser: false

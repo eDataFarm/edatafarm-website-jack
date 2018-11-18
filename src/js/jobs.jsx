@@ -10,7 +10,7 @@ class Join extends React.Component {
 
     serverRequest() {
         let email = localStorage.getItem("email");
-        $.get("http://localhost:3000/api/v1/users/" + email, res => {
+        $.get("../api/v1/users/" + email, res => {
             if (res.Email !== "") {
                 this.setState({
                     user: true
@@ -48,7 +48,7 @@ class Jobs extends React.Component {
     }
 
     serverRequest() {
-        let path = "http://localhost:3000/api/v1/jobs/?country=" + this.state.country + "&language=" + this.state.language;
+        let path = "../api/v1/jobs/?country=" + this.state.country + "&language=" + this.state.language;
 
         $.get(path, res => {
             this.setState({
@@ -88,12 +88,12 @@ class Jobs extends React.Component {
     }
 
     setup() {
-        $.get("http://localhost:3000/api/v1/countries", res => {
+        $.get("../api/v1/countries", res => {
             this.setState({
                 countries: res
             });
         });
-        $.get("http://localhost:3000/api/v1/languages", res => {
+        $.get("../api/v1/languages", res => {
             this.setState({
                 languages: res
             });
@@ -229,7 +229,7 @@ class Job extends React.Component {
     serverRequest(job) {
         let email = localStorage.getItem("email");
         $.post(
-            "http://localhost:3000/api/v1/jobs/apply/" + job.Id,
+            "../api/v1/jobs/apply/" + job.Id,
             { applied: 1 , email: email},
             res => {
                 this.setState({ applied: "Applied!", jobs: res });

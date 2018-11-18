@@ -43,7 +43,7 @@ function (_React$Component) {
       var _this2 = this;
 
       var email = localStorage.getItem("email");
-      $.get("http://localhost:3000/api/v1/users/" + email, function (res) {
+      $.get("../api/v1/users/" + email, function (res) {
         if (res.Email !== "") {
           _this2.setState({
             user: res,

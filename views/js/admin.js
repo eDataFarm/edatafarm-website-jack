@@ -42,7 +42,7 @@ function (_React$Component) {
       var _this2 = this;
 
       var email = localStorage.getItem("email");
-      $.get("http://localhost:3000/api/v1/users/" + email, function (res) {
+      $.get("../api/v1/users/" + email, function (res) {
         if (res.Admin === true) {
           _this2.setState({
             admin: true
@@ -94,7 +94,7 @@ function (_React$Component2) {
     value: function serverRequest() {
       var _this4 = this;
 
-      $.get("http://localhost:3000/api/v1/jobs", function (res) {
+      $.get("../api/v1/jobs", function (res) {
         _this4.setState({
           jobs: res
         });
@@ -169,7 +169,7 @@ function (_React$Component3) {
     value: function serverRequest(job) {
       var _this6 = this;
 
-      $.post("http://localhost:3000/api/v1/applicants/" + job.Id, function (res) {
+      $.post("../api/v1/applicants/" + job.Id, function (res) {
         _this6.setState({
           users: res
         });

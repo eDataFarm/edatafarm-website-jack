@@ -84,7 +84,7 @@ class FormContainer extends React.Component {
             this.state.newUser.email = email
         }
 
-        $.post("http://localhost:3000/api/v1/users", userData, response => {
+        $.post("../api/v1/users", userData, response => {
             this.setState({ user: response, loadedUser: false });
             console.log("UserData:", response);
             alert('Application form was submitted');

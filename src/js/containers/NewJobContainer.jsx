@@ -68,7 +68,7 @@ class NewJobContainer extends React.Component {
     }
 
     serverRequest(jobData) {
-        $.post("http://localhost:3000/api/v1/jobs", jobData, response => {
+        $.post("../api/v1/jobs", jobData, response => {
             alert('Job was submitted');
             window.location.assign('/admin');
         }).fail((jqXHR, textStatus, errorThrown) => {

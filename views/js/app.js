@@ -173,7 +173,7 @@ function (_React$Component3) {
     value: function serverRequest() {
       var _this3 = this;
 
-      $.get("http://localhost:3000/api/v1/users", function (res) {
+      $.get("../api/v1/users", function (res) {
         _this3.setState({
           users: res
         });

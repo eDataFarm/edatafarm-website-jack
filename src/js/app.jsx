@@ -114,7 +114,7 @@ class LoggedIn extends React.Component {
     }
 
     serverRequest() {
-        $.get("http://localhost:3000/api/v1/users", res => {
+        $.get("../api/v1/users", res => {
             this.setState({
                 users: res
             });

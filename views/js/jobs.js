@@ -42,7 +42,7 @@ function (_React$Component) {
       var _this2 = this;
 
       var email = localStorage.getItem("email");
-      $.get("http://localhost:3000/api/v1/users/" + email, function (res) {
+      $.get("../api/v1/users/" + email, function (res) {
         if (res.Email !== "") {
           _this2.setState({
             user: true
@@ -96,7 +96,7 @@ function (_React$Component2) {
     value: function serverRequest() {
       var _this4 = this;
 
-      var path = "http://localhost:3000/api/v1/jobs/?country=" + this.state.country + "&language=" + this.state.language;
+      var path = "../api/v1/jobs/?country=" + this.state.country + "&language=" + this.state.language;
       $.get(path, function (res) {
         _this4.setState({
           jobs: res
@@ -143,12 +143,12 @@ function (_React$Component2) {
     value: function setup() {
       var _this5 = this;
 
-      $.get("http://localhost:3000/api/v1/countries", function (res) {
+      $.get("../api/v1/countries", function (res) {
         _this5.setState({
           countries: res
         });
       });
-      $.get("http://localhost:3000/api/v1/languages", function (res) {
+      $.get("../api/v1/languages", function (res) {
         _this5.setState({
           languages: res
         });
@@ -292,7 +292,7 @@ function (_React$Component3) {
       var _this7 = this;
 
       var email = localStorage.getItem("email");
-      $.post("http://localhost:3000/api/v1/jobs/apply/" + job.Id, {
+      $.post("../api/v1/jobs/apply/" + job.Id, {
         applied: 1,
         email: email
       }, function (res) {

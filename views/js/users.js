@@ -42,7 +42,7 @@ function (_React$Component) {
       var _this2 = this;
 
       var email = localStorage.getItem("email");
-      $.get("http://localhost:3000/api/v1/users/" + email, function (res) {
+      $.get("../api/v1/users/" + email, function (res) {
         if (res.Admin === true) {
           _this2.setState({
             admin: true
@@ -100,7 +100,7 @@ function (_React$Component2) {
         jobID = location.search.match(/JobID=([^&]*)/i)[1];
       }
 
-      $.get("http://localhost:3000/api/v1/applicants/" + jobID, function (res) {
+      $.get("../api/v1/applicants/" + jobID, function (res) {
         _this4.setState({
           users: res
         });

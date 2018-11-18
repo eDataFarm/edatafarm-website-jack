@@ -43,7 +43,7 @@ function (_React$Component) {
       var _this2 = this;
 
       var adminEmail = localStorage.getItem("email");
-      $.get("http://localhost:3000/api/v1/users/" + adminEmail, function (res) {
+      $.get("../api/v1/users/" + adminEmail, function (res) {
         if (res.Admin === true) {
           _this2.setState({
             admin: true
@@ -56,7 +56,7 @@ function (_React$Component) {
         userEmail = location.search.match(/email=([^&]*)/i)[1];
       }
 
-      $.get("http://localhost:3000/api/v1/users/" + userEmail, function (res) {
+      $.get("../api/v1/users/" + userEmail, function (res) {
         _this2.setState({
           user: res
         });

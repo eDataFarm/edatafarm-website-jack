@@ -11,7 +11,7 @@ class Apply extends React.Component {
 
     serverRequest() {
         let email = localStorage.getItem("email");
-        $.get("http://localhost:3000/api/v1/users/" + email, res => {
+        $.get("../api/v1/users/" + email, res => {
             if (res.Email !== "") {
                 this.setState({
                     user: res,

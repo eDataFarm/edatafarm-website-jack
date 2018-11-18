@@ -11,7 +11,7 @@ class NewJob extends React.Component {
 
     serverRequest() {
         let email = localStorage.getItem("email");
-        $.get("http://localhost:3000/api/v1/users/" + email, res => {
+        $.get("../api/v1/users/" + email, res => {
             if (res.Admin === true) {
                 this.setState({
                     admin: true
@@ -25,7 +25,7 @@ class NewJob extends React.Component {
             jobID = location.search.match(/JobID=([^&]*)/i)[1];
         }
 
-        $.get("http://localhost:3000/api/v1/jobs/" + jobID, res => {
+        $.get("../api/v1/jobs/" + jobID, res => {
             this.setState({
                 job: res
             });

@@ -11,7 +11,7 @@ class User extends React.Component {
 
     serverRequest() {
         let adminEmail = localStorage.getItem("email");
-        $.get("http://localhost:3000/api/v1/users/" + adminEmail, res => {
+        $.get("../api/v1/users/" + adminEmail, res => {
             if (res.Admin === true) {
                 this.setState({
                     admin: true
@@ -25,7 +25,7 @@ class User extends React.Component {
             userEmail = location.search.match(/email=([^&]*)/i)[1];
         }
 
-        $.get("http://localhost:3000/api/v1/users/" + userEmail, res => {
+        $.get("../api/v1/users/" + userEmail, res => {
             this.setState({
                 user: res
             });
