@@ -49,16 +49,16 @@ type User struct {
 	Email 		string 		`db:"email" form:"email" binding:"required"`
 	Phone  		string 		`db:"phone" form:"phone" binding:"required"`
 	Position 	[]string 	`db:"position" form:"position[]" binding:"required"`
-	Languages 	[]string 		`db:"languages" form:"languages"`
+	Languages 	[]string 	`db:"languages" form:"languages" binding:"required"`
 	Referrer  	string 		`db:"referrer" form:"referrer"`
 	Resume 		string 		`db:"resume" form:"resume" binding:"required"`
 	Education 	[]string	`db:"education" form:"education[]"`
 	Major  		string 		`db:"major" form:"major"`
 	About 		string 		`db:"about" form:"about" binding:"required"`
 	Skills  	string 		`db:"skills" form:"skills" binding:"required"`
-	Ref1  		string 		`db:"ref1" form:"ref1" binding:"required"`
-	Ref2  		string 		`db:"ref2" form:"ref2" binding:"required"`
-	Ref3  		string 		`db:"ref3" form:"ref3" binding:"required"`
+	Ref1  		string 		`db:"ref1" form:"ref1"`
+	Ref2  		string 		`db:"ref2" form:"ref2"`
+	Ref3  		string 		`db:"ref3" form:"ref3"`
 	Admin		bool		`db:"admin" form:"admin"`
 }
 

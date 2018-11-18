@@ -281,7 +281,7 @@ function (_React$Component) {
         placeholder: 'Please write a few sentences explaining your why you are the best candidate for this position(s)',
         handleChange: this.handleInput
       }), React.createElement(TextArea, {
-        title: 'Experience',
+        title: 'Relevant Experience',
         rows: 10,
         name: 'skills',
         value: this.state.newUser.skills,

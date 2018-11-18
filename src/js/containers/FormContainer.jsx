@@ -222,7 +222,7 @@ class FormContainer extends React.Component {
                 />{/* About you */}
 
                 <TextArea
-                    title={'Experience'}
+                    title={'Relevant Experience'}
                     rows={10}
                     name={'skills'}
                     value={this.state.newUser.skills}
