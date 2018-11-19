@@ -148,7 +148,9 @@ class Jobs extends React.Component {
                             /> {/* Clear language filter */}
                         </div>
                     </form>
+
                     <h3>There are no matching positions at the moment. Please clear any filters or check again later.</h3>
+
                     <div className="container">
                         <a className={"x-btn btn_style_rec x-btn-global"}
                            href={"../../user/index.html"}
@@ -170,17 +172,35 @@ class Jobs extends React.Component {
                                 options = {this.state.countries}
                                 value = {this.state.country}
                                 placeholder = {'Select Country'}
-                                style = {selectStyle}
-                                handleChange = {this.handleLanguage}
+                                style={selectStyle}
+                                handleChange = {this.handleCountry}
                         /> {/* Country Filter */}
+                    </div>
+                    <div className="col-md-6">
+                        <Button
+                            action = {this.handleClearCountry}
+                            type = {'primary'}
+                            title = {'Clear Filter'}
+                            style={buttonStyle}
+                        /> {/* Clear country filter */}
+                    </div>
+                    <div className="col-md-6" >
+                        <Select title={'Filter By Language'}
+                                name={'language'}
+                                options = {this.state.languages}
+                                value = {this.state.language}
+                                placeholder = {'Select Language'}
+                                style={selectStyle}
+                                handleChange = {this.handleLanguage}
+                        /> {/* Language Filter */}
                     </div>
                     <div className="col-md-6">
                         <Button
                             action = {this.handleClearLanguage}
                             type = {'primary'}
-                            title = {'Clear Filters'}
+                            title = {'Clear Filter'}
                             style={buttonStyle}
-                        /> {/* Clear the form */}
+                        /> {/* Clear language filter */}
                     </div>
                 </form>
 

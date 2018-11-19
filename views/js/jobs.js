@@ -224,13 +224,30 @@ function (_React$Component2) {
         value: this.state.country,
         placeholder: 'Select Country',
         style: selectStyle,
+        handleChange: this.handleCountry
+      }), " "), React.createElement("div", {
+        className: "col-md-6"
+      }, React.createElement(Button, {
+        action: this.handleClearCountry,
+        type: 'primary',
+        title: 'Clear Filter',
+        style: buttonStyle
+      }), " "), React.createElement("div", {
+        className: "col-md-6"
+      }, React.createElement(Select, {
+        title: 'Filter By Language',
+        name: 'language',
+        options: this.state.languages,
+        value: this.state.language,
+        placeholder: 'Select Language',
+        style: selectStyle,
         handleChange: this.handleLanguage
       }), " "), React.createElement("div", {
         className: "col-md-6"
       }, React.createElement(Button, {
         action: this.handleClearLanguage,
         type: 'primary',
-        title: 'Clear Filters',
+        title: 'Clear Filter',
         style: buttonStyle
       }), " ")), React.createElement("div", {
         className: "row"
