@@ -42,10 +42,10 @@ function (_React$Component) {
         languages: ''
       },
       countries: [],
+      languages: [],
       loadedJobs: false
     };
     _this.handleTitle = _this.handleTitle.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.handleLanguages = _this.handleLanguages.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleInput = _this.handleInput.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleExpiresAt = _this.handleExpiresAt.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleDescription = _this.handleDescription.bind(_assertThisInitialized(_assertThisInitialized(_this)));
@@ -66,18 +66,6 @@ function (_React$Component) {
         return {
           newJob: _objectSpread({}, prevState.newJob, {
             title: value
-          })
-        };
-      });
-    }
-  }, {
-    key: "handleLanguages",
-    value: function handleLanguages(e) {
-      var value = e.target.value;
-      this.setState(function (prevState) {
-        return {
-          newJob: _objectSpread({}, prevState.newJob, {
-            languages: value
           })
         };
       });
@@ -163,6 +151,11 @@ function (_React$Component) {
         delete job["Countries"];
       }
 
+      if (job["Languages"] !== undefined) {
+        this.state.languages = job["Languages"];
+        delete job["Languages"];
+      }
+
       if (!this.state.loadedJobs) {
         for (var key in job) {
           if (job.hasOwnProperty(key)) {
@@ -206,13 +199,13 @@ function (_React$Component) {
         value: this.state.newJob.country,
         placeholder: 'Select Country',
         handleChange: this.handleInput
-      }), " ", React.createElement(Input, {
-        inputType: 'text',
+      }), " ", React.createElement(Select, {
         title: 'Languages',
         name: 'languages',
+        options: this.state.languages,
         value: this.state.newJob.languages,
-        placeholder: 'Comma separated list of any language(s) required',
-        handleChange: this.handleLanguages
+        placeholder: 'Select Languages',
+        handleChange: this.handleInput
       }), " ", React.createElement(Button, {
         action: this.handleFormSubmit,
         type: 'primary',

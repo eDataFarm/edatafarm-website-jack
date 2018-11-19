@@ -11,11 +11,11 @@ class NewJobContainer extends React.Component {
                 languages: ''
             },
             countries: [],
+            languages: [],
             loadedJobs: false
         }
 
         this.handleTitle = this.handleTitle.bind(this);
-        this.handleLanguages = this.handleLanguages.bind(this);
         this.handleInput = this.handleInput.bind(this);
         this.handleExpiresAt = this.handleExpiresAt.bind(this);
         this.handleDescription = this.handleDescription.bind(this);
@@ -32,14 +32,6 @@ class NewJobContainer extends React.Component {
         this.setState( prevState => ({
             newJob : {...prevState.newJob, title: value}
         })
-        )
-    }
-
-    handleLanguages(e) {
-        let value = e.target.value;
-        this.setState( prevState => ({
-                newJob : {...prevState.newJob, languages: value}
-            })
         )
     }
 
@@ -106,6 +98,10 @@ class NewJobContainer extends React.Component {
             delete job["Countries"];
         }
 
+        if (job["Languages"] !== undefined) {
+            this.state.languages = job["Languages"];
+            delete job["Languages"];
+        }
 
         if (!this.state.loadedJobs) {
             for (var key in job) {
@@ -154,13 +150,14 @@ class NewJobContainer extends React.Component {
                         handleChange = {this.handleInput}
                 /> {/* Country Selection */}
 
-                <Input inputType={'text'}
-                       title= {'Languages'}
-                       name= {'languages'}
-                       value={this.state.newJob.languages}
-                       placeholder = {'Comma separated list of any language(s) required'}
-                       handleChange = {this.handleLanguages}
-                /> {/* Languages */}
+                <   Select title={'Languages'}
+                        name={'languages'}
+                        options = {this.state.languages}
+                        value = {this.state.newJob.languages}
+                        placeholder = {'Select Languages'}
+                        handleChange = {this.handleInput}
+                /> {/* Languages Selection */}
+
 
                 <Button
                     action = {this.handleFormSubmit}

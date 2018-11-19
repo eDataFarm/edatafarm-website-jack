@@ -69,12 +69,13 @@ type Job struct {
 	Description	string 		`db:"description" form:"description" binding:"required"`
 	Applicants	int64    	`db:"applicants" form:"applicants"`
 	Country		string		`db:"country" form:"country" binding:"required"`
-	Languages	[]string	`db:"languages" form:"languages[]" binding:"required"`
+	Languages	[]string	`db:"languages" form:"languages[]"`
 }
 
 type NewJob struct {
 	*Job
 	Countries []string
+	Languages []string
 }
 
 // Create an empty list of jobs
@@ -309,9 +310,9 @@ func initDB() {
 
 		// Running an SQL query also checks the connection to the PostgreSQL server is authenticated and valid.
 		// Uncomment to run down migrations
-		if err := removeTables(); err != nil {
-			log.Fatal(err)
-		}
+		//if err := removeTables(); err != nil {
+		//	log.Fatal(err)
+		//}
 		// Ensure the table exists.
 		if err := createTables(); err != nil {
 			log.Fatal(err)
@@ -419,8 +420,7 @@ func CreateUser(c *gin.Context) {
 
 	if user.Name != "" && user.Resume != "" {
 		targetColumnNames := structs.Names(&User{})
-		insertUser := buildInsertStatement("userinfo", targetColumnNames[1:])
-		log.Println("insert", insertUser)
+		insertUser := buildUpsertStatement("userinfo", targetColumnNames[1:], "email")
 		execParams := make([]interface{}, 0, 50)
 		execParams = append( execParams, user.Name, user.Email, user.Phone,
 			strings.Join(user.Position, ","), user.Languages, user.Referrer, user.Resume,
@@ -498,7 +498,7 @@ func JobsHandler(c *gin.Context) {
 func JobHandler(c *gin.Context) {
 	jobID := c.Param("jobID")
 	job := new(Job)
-	newJob := NewJob{job, getCountries()}
+	newJob := NewJob{job, getCountries(), getLanguages()}
 
 	if jobID == "undefined" {
 		c.JSON(http.StatusOK, newJob)
@@ -672,9 +672,14 @@ func getSetString(targetColumnNames []string) string {
 }
 
 func buildInsertStatement(targetTableName string, targetColumnNames []string) string {
-	return fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s) ON CONFLICT (email) DO UPDATE SET %s;",
+	return fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s) returning id;",
+		targetTableName, strings.Join(targetColumnNames, ","), getValueString(len(targetColumnNames)))
+}
+
+func buildUpsertStatement(targetTableName string, targetColumnNames []string, conflictColumn string) string {
+	return fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s) ON CONFLICT (%s) DO UPDATE SET %s;",
 		targetTableName, strings.Join(targetColumnNames, ","), getValueString(len(targetColumnNames)),
-		getSetString(targetColumnNames))
+		conflictColumn, getSetString(targetColumnNames))
 }
 
 func getCountries() []string {
@@ -691,4 +696,11 @@ func getLanguages() []string {
 		log.Fatal("Cannot load languages file")
 	}
 	return strings.Split(string(languages), "\n")
+	//returnArray := make([]map[int]string, 0, len(languagesArray))
+	//for index, language := range languagesArray {
+	//	m := make(map[int]string)
+	//	m[index] = language
+	//	returnArray = append(returnArray, m)
+	//}
+	//return returnArray
 }
