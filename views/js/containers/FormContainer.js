@@ -141,13 +141,13 @@ function (_React$Component) {
         this.state.newUser.email = email;
       }
 
+      console.log("POST newUser:", this.state.newUser);
       $.post("../api/v1/users", userData, function (response) {
         _this2.setState({
-          user: response,
-          loadedUser: false
+          user: response
         });
 
-        console.log("UserData:", response);
+        console.log("response:", response);
         alert('Application form was submitted');
       }).fail(function (jqXHR, textStatus, errorThrown) {
         alert(textStatus + ': ' + errorThrown);
@@ -204,7 +204,7 @@ function (_React$Component) {
     value: function render() {
       var user = this.props.user;
 
-      if (user !== undefined && !this.state.loadedUser) {
+      if (user !== '' && !this.state.loadedUser) {
         for (var key in user) {
           if (user.hasOwnProperty(key)) {
             var newKey = this.lowercaseFirstLetter(key);

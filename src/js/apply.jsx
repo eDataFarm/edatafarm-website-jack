@@ -11,14 +11,16 @@ class Apply extends React.Component {
 
     serverRequest() {
         let email = localStorage.getItem("email");
-        $.get("../api/v1/users/" + email, res => {
-            if (res.Email !== "") {
-                this.setState({
-                    user: res,
-                    loggedIn: true
-                });
-            }
-        });
+        if (email) {
+            this.setState({loggedIn: true });
+            $.get("../api/v1/users/" + email, res => {
+                if (res.Email !== "") {
+                    this.setState({
+                        user: res,
+                    });
+                }
+            });
+        }
     }
 
     componentDidMount() {

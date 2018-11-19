@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS userinfo
     (
         id serial primary key,
         name character varying(100) NOT NULL,
-        email character varying(100) NOT NULL,
+        email character varying(100) UNIQUE,
         phone character varying(100) NOT NULL,
         position character varying(100) NOT NULL,
         languages character varying(100) NOT NULL,

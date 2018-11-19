@@ -85,8 +85,7 @@ class FormContainer extends React.Component {
         }
 
         $.post("../api/v1/users", userData, response => {
-            this.setState({ user: response, loadedUser: false });
-            console.log("UserData:", response);
+            this.setState({ user: response });
             alert('Application form was submitted');
         }).fail((jqXHR, textStatus, errorThrown) => {
             alert(textStatus + ': ' + errorThrown);
@@ -136,7 +135,7 @@ class FormContainer extends React.Component {
 
     render() {
         let user = this.props.user;
-        if (user !== undefined && !this.state.loadedUser) {
+        if (user !== '' && !this.state.loadedUser) {
             for (var key in user) {
                 if (user.hasOwnProperty(key)) {
                     let newKey = this.lowercaseFirstLetter(key);
@@ -144,7 +143,6 @@ class FormContainer extends React.Component {
                 }
             }
             this.state.loadedUser = true;
-            console.log("newUser:", this.state.newUser);
         }
 
         return (

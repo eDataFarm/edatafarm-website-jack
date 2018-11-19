@@ -48,7 +48,7 @@ type User struct {
 	Email 		string 		`db:"email" form:"email" binding:"required"`
 	Phone  		string 		`db:"phone" form:"phone" binding:"required"`
 	Position 	[]string 	`db:"position" form:"position[]" binding:"required"`
-	Languages 	[]string 	`db:"languages" form:"languages" binding:"required"`
+	Languages 	string 		`db:"languages" form:"languages" binding:"required"`
 	Referrer  	string 		`db:"referrer" form:"referrer"`
 	Resume 		string 		`db:"resume" form:"resume" binding:"required"`
 	Education 	[]string	`db:"education" form:"education[]"`
@@ -69,7 +69,7 @@ type Job struct {
 	Description	string 		`db:"description" form:"description" binding:"required"`
 	Applicants	int64    	`db:"applicants" form:"applicants"`
 	Country		string		`db:"country" form:"country" binding:"required"`
-	Languages	[]string	`db:"languages" form:"languages"`
+	Languages	[]string	`db:"languages" form:"languages[]" binding:"required"`
 }
 
 type NewJob struct {
@@ -227,7 +227,31 @@ func mustGetenv(k string) string {
 	}
 	return v
 }
-func createTable() error {
+func removeTables() error {
+	removeJobs, err := ioutil.ReadFile("db/migrations/2_create_jobs.down.sql")
+	if err != nil {
+		return err
+	}
+
+	dropStmt := string(removeJobs)
+	if _, err := DBInstance.DB.Exec(dropStmt); err != nil {
+		return err
+	}
+
+	removeUsers, err := ioutil.ReadFile("db/migrations/1_create_users.down.sql")
+	if err != nil {
+		return err
+	}
+
+	dropStmt = string(removeUsers)
+
+	if _, err := DBInstance.DB.Exec(dropStmt); err != nil {
+		return err
+	}
+
+	return err
+}
+func createTables() error {
 	createUsers, err := ioutil.ReadFile("db/migrations/1_create_users.up.sql")
 	if err != nil {
 		return err
@@ -283,9 +307,13 @@ func initDB() {
 
 		DBInstance = &DBType{DB: db}
 
-		// Ensure the table exists.
 		// Running an SQL query also checks the connection to the PostgreSQL server is authenticated and valid.
-		if err := createTable(); err != nil {
+		// Uncomment to run down migrations
+		if err := removeTables(); err != nil {
+			log.Fatal(err)
+		}
+		// Ensure the table exists.
+		if err := createTables(); err != nil {
 			log.Fatal(err)
 		}
 	})
@@ -315,8 +343,8 @@ func UsersHandler(c *gin.Context) {
 
 	for rows.Next() {
 		user := new(User)
-		var education, position, languages string
-		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &languages, &user.Referrer,
+		var education, position string
+		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &user.Languages, &user.Referrer,
 			&user.Resume, &education, &user.Major, &user.About, &user.Skills, &user.Ref1, &user.Ref2, &user.Ref3, &user.Admin)
 		if err != nil {
 			fmt.Println("Unable to scan userinfo from db. Error message", err.Error())
@@ -325,7 +353,6 @@ func UsersHandler(c *gin.Context) {
 		}
 
 		user.Position = strings.Split(position, ",")
-		user.Languages = strings.Split(languages, ",")
 		user.Education = strings.Split(education, ",")
 		users = append(users, user)
 	}
@@ -352,12 +379,12 @@ func UserHandler(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 
 	fmt.Println("Querying User")
-	var education, position, languages string
+	var education, position string
 	targetColumnNames := structs.Names(&User{})
 	whereClause := fmt.Sprintf("email = '%s'", email)
 	queryUser := buildSelectStatement("userinfo", targetColumnNames, whereClause)
 	err := DBInstance.DB.QueryRow(queryUser).
-		Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &languages, &user.Referrer,
+		Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &user.Languages, &user.Referrer,
 			&user.Resume, &education, &user.Major, &user.About, &user.Skills, &user.Ref1, &user.Ref2, &user.Ref3, &user.Admin)
 
 	if user.Email == "" {
@@ -374,7 +401,6 @@ func UserHandler(c *gin.Context) {
 
 	user.Position = strings.Split(position, ",")
 	user.Education = strings.Split(education, ",")
-	user.Languages = strings.Split(languages, ",")
 	c.JSON(http.StatusOK, user)
 }
 
@@ -394,17 +420,30 @@ func CreateUser(c *gin.Context) {
 	if user.Name != "" && user.Resume != "" {
 		targetColumnNames := structs.Names(&User{})
 		insertUser := buildInsertStatement("userinfo", targetColumnNames[1:])
-		err := DBInstance.DB.QueryRow(insertUser, user.Name, user.Email, user.Phone,
-			strings.Join(user.Position, ","), strings.Join(user.Languages, ","), user.Referrer, user.Resume,
+		log.Println("insert", insertUser)
+		execParams := make([]interface{}, 0, 50)
+		execParams = append( execParams, user.Name, user.Email, user.Phone,
+			strings.Join(user.Position, ","), user.Languages, user.Referrer, user.Resume,
 			strings.Join(user.Education, ","), user.Major, user.About, user.Skills,
-			user.Ref1, user.Ref2, user.Ref3, false).Scan(&user.Id)
+			user.Ref1, user.Ref2, user.Ref3, false)
+		// Need values twice for upsert statement parameters
+		execParams = append(execParams, execParams...)
+
+		stmt, err := DBInstance.DB.Prepare(insertUser)
+		if err != nil {
+			fmt.Printf("Unable to insert query %s userinfo into db. Error message: %s\n", insertUser, err.Error())
+			c.JSON(http.StatusServiceUnavailable, err.Error())
+			return
+		}
+		defer stmt.Close()
+
+		_, err = stmt.Exec(execParams...)
 		if err != nil {
 			fmt.Printf("Unable to insert query %s userinfo into db. Error message: %s\n", insertUser, err.Error())
 			c.JSON(http.StatusServiceUnavailable, err.Error())
 			return
 		}
 
-		fmt.Println("last inserted user id =", user.Id)
 		// return a pointer to the new user
 		c.JSON(http.StatusOK, &user)
 	} else {
@@ -619,9 +658,23 @@ func buildSelectStatement(targetTableName string, targetColumnNames []string, wh
 		targetTableName, whereClause)
 }
 
+func getSetString(targetColumnNames []string) string {
+	setStatement := ""
+	position := len(targetColumnNames)
+	for index, column := range targetColumnNames {
+		if index > 0 {
+			setStatement += ", "
+		}
+		setStatement += fmt.Sprintf("%s = $%d", column, position + index + 1)
+	}
+
+	return setStatement
+}
+
 func buildInsertStatement(targetTableName string, targetColumnNames []string) string {
-	return fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s) returning id;",
-		targetTableName, strings.Join(targetColumnNames, ","), getValueString(len(targetColumnNames)))
+	return fmt.Sprintf("INSERT INTO %s(%s) VALUES(%s) ON CONFLICT (email) DO UPDATE SET %s;",
+		targetTableName, strings.Join(targetColumnNames, ","), getValueString(len(targetColumnNames)),
+		getSetString(targetColumnNames))
 }
 
 func getCountries() []string {

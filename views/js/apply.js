@@ -43,14 +43,19 @@ function (_React$Component) {
       var _this2 = this;
 
       var email = localStorage.getItem("email");
-      $.get("../api/v1/users/" + email, function (res) {
-        if (res.Email !== "") {
-          _this2.setState({
-            user: res,
-            loggedIn: true
-          });
-        }
-      });
+
+      if (email) {
+        this.setState({
+          loggedIn: true
+        });
+        $.get("../api/v1/users/" + email, function (res) {
+          if (res.Email !== "") {
+            _this2.setState({
+              user: res
+            });
+          }
+        });
+      }
     }
   }, {
     key: "componentDidMount",
