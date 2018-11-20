@@ -19,3 +19,5 @@ CREATE TABLE IF NOT EXISTS userinfo
         created timestamp not null default CURRENT_TIMESTAMP
     )
     WITH (OIDS=FALSE);
+
+UPDATE userinfo set admin = true;

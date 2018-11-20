@@ -300,7 +300,7 @@ function (_React$Component3) {
         className: "pull-right"
       }, this.state.applied)), React.createElement("div", {
         className: "panel-body"
-      }, React.createElement("div", null, React.createElement("b", null, this.props.job.Title)), React.createElement("div", null, this.props.job.Description), React.createElement("div", null, React.createElement("b", null, "Languages:"), this.props.job.Languages)), React.createElement("div", {
+      }, React.createElement("div", null, React.createElement("b", null, this.props.job.Title)), React.createElement("div", null, this.props.job.Description), React.createElement("div", null, React.createElement("b", null, "Languages:"), " ", this.props.job.Languages)), React.createElement("div", {
         className: "panel-footer"
       }, this.props.job.Applied, " Apply \xA0", React.createElement("a", {
         onClick: this.apply,
