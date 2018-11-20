@@ -228,6 +228,7 @@ class Job extends React.Component {
                     <div className="panel-body">
                         <div><b>{this.props.job.Title}</b></div>
                         <div>{this.props.job.Description}</div>
+                        <div><b>Languages:</b> {this.props.job.Languages}</div>
                     </div>
                     <div className="panel-footer">
                         {this.props.job.Applied} Apply &nbsp;

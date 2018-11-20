@@ -125,9 +125,6 @@ func main() {
 	// Initialize the DBInstance singleton
 	initDB()
 
-	// Initialize the jobs array
-	jobs = getJobs("", "")
-
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
 
