@@ -165,10 +165,10 @@ function (_React$Component2) {
       if (this.state.jobs.length === 0) {
         return React.createElement("div", {
           className: "container"
-        }, React.createElement("h2", null, "Jobs"), React.createElement("form", {
+        }, React.createElement("form", {
           className: "container-fluid"
         }, React.createElement("div", {
-          className: "col-md-6"
+          className: "col-md-3"
         }, React.createElement(Select, {
           title: 'Filter By Country',
           name: 'country',
@@ -178,14 +178,14 @@ function (_React$Component2) {
           style: selectStyle,
           handleChange: this.handleCountry
         }), " "), React.createElement("div", {
-          className: "col-md-6"
+          className: "col-md-3"
         }, React.createElement(Button, {
           action: this.handleClearCountry,
           type: 'primary',
           title: 'Clear Filter',
           style: buttonStyle
         }), " "), React.createElement("div", {
-          className: "col-md-6"
+          className: "col-md-3"
         }, React.createElement(Select, {
           title: 'Filter By Language',
           name: 'language',
@@ -195,7 +195,7 @@ function (_React$Component2) {
           style: selectStyle,
           handleChange: this.handleLanguage
         }), " "), React.createElement("div", {
-          className: "col-md-6"
+          className: "col-md-3"
         }, React.createElement(Button, {
           action: this.handleClearLanguage,
           type: 'primary',
@@ -213,10 +213,10 @@ function (_React$Component2) {
 
       return React.createElement("div", {
         className: "container"
-      }, React.createElement("h2", null, "Jobs"), React.createElement("form", {
+      }, React.createElement("form", {
         className: "container-fluid"
       }, React.createElement("div", {
-        className: "col-md-6"
+        className: "col-md-3"
       }, React.createElement(Select, {
         title: 'Filter By Country',
         name: 'country',
@@ -226,14 +226,14 @@ function (_React$Component2) {
         style: selectStyle,
         handleChange: this.handleCountry
       }), " "), React.createElement("div", {
-        className: "col-md-6"
+        className: "col-md-3"
       }, React.createElement(Button, {
         action: this.handleClearCountry,
         type: 'primary',
         title: 'Clear Filter',
         style: buttonStyle
       }), " "), React.createElement("div", {
-        className: "col-md-6"
+        className: "col-md-3"
       }, React.createElement(Select, {
         title: 'Filter By Language',
         name: 'language',
@@ -243,7 +243,7 @@ function (_React$Component2) {
         style: selectStyle,
         handleChange: this.handleLanguage
       }), " "), React.createElement("div", {
-        className: "col-md-6"
+        className: "col-md-3"
       }, React.createElement(Button, {
         action: this.handleClearLanguage,
         type: 'primary',
@@ -323,7 +323,7 @@ function (_React$Component3) {
     key: "render",
     value: function render() {
       return React.createElement("div", {
-        className: "col-xs-4"
+        className: "col-md-6"
       }, React.createElement("div", {
         className: "panel panel-default"
       }, React.createElement("div", {

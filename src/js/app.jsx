@@ -132,4 +132,7 @@ class LoggedIn extends React.Component {
     }
 }
 
-ReactDOM.render(<App />, document.getElementById('app'));
+// Mount all of the instances of the component
+Array.from(document.querySelectorAll('.app')).forEach(inp => {
+    ReactDOM.render(<App />, inp);
+});

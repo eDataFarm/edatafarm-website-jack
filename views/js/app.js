@@ -194,6 +194,9 @@ function (_React$Component3) {
   }]);
 
   return LoggedIn;
-}(React.Component);
+}(React.Component); // Mount all of the instances of the component
 
-ReactDOM.render(React.createElement(App, null), document.getElementById('app'));
+
+Array.from(document.querySelectorAll('.app')).forEach(function (inp) {
+  ReactDOM.render(React.createElement(App, null), inp);
+});

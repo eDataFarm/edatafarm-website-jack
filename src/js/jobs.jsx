@@ -108,10 +108,8 @@ class Jobs extends React.Component {
         if (this.state.jobs.length === 0) {
             return (
                 <div className="container">
-                    <h2>Jobs</h2>
-
                     <form className="container-fluid">
-                        <div className="col-md-6" >
+                        <div className="col-md-3" >
                             <Select title={'Filter By Country'}
                                     name={'country'}
                                     options = {this.state.countries}
@@ -121,7 +119,7 @@ class Jobs extends React.Component {
                                     handleChange = {this.handleCountry}
                             /> {/* Country Filter */}
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-md-3">
                             <Button
                                 action = {this.handleClearCountry}
                                 type = {'primary'}
@@ -129,7 +127,7 @@ class Jobs extends React.Component {
                                 style={buttonStyle}
                             /> {/* Clear country filter */}
                         </div>
-                        <div className="col-md-6" >
+                        <div className="col-md-3" >
                             <Select title={'Filter By Language'}
                                     name={'language'}
                                     options = {this.state.languages}
@@ -139,7 +137,7 @@ class Jobs extends React.Component {
                                     handleChange = {this.handleLanguage}
                             /> {/* Language Filter */}
                         </div>
-                        <div className="col-md-6">
+                        <div className="col-md-3">
                             <Button
                                 action = {this.handleClearLanguage}
                                 type = {'primary'}
@@ -164,9 +162,8 @@ class Jobs extends React.Component {
         }
         return (
             <div className="container">
-                <h2>Jobs</h2>
                 <form className="container-fluid">
-                    <div className="col-md-6" >
+                    <div className="col-md-3" >
                         <Select title={'Filter By Country'}
                                 name={'country'}
                                 options = {this.state.countries}
@@ -176,7 +173,7 @@ class Jobs extends React.Component {
                                 handleChange = {this.handleCountry}
                         /> {/* Country Filter */}
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-md-3">
                         <Button
                             action = {this.handleClearCountry}
                             type = {'primary'}
@@ -184,7 +181,7 @@ class Jobs extends React.Component {
                             style={buttonStyle}
                         /> {/* Clear country filter */}
                     </div>
-                    <div className="col-md-6" >
+                    <div className="col-md-3" >
                         <Select title={'Filter By Language'}
                                 name={'language'}
                                 options = {this.state.languages}
@@ -194,7 +191,7 @@ class Jobs extends React.Component {
                                 handleChange = {this.handleLanguage}
                         /> {/* Language Filter */}
                     </div>
-                    <div className="col-md-6">
+                    <div className="col-md-3">
                         <Button
                             action = {this.handleClearLanguage}
                             type = {'primary'}
@@ -259,7 +256,7 @@ class Job extends React.Component {
 
     render() {
         return (
-            <div className="col-xs-4">
+            <div className="col-md-6">
                 <div className="panel panel-default">
                     <div className="panel-heading">
                         #{this.props.job.Id}{" "}
