@@ -457,10 +457,10 @@ func getJobs(country, language string) []*Job {
 	fmt.Println("Querying Jobs")
 	targetColumnNames := structs.Names(&Job{})
 	whereClause := fmt.Sprintf("expiration > '%s'", time.Now().Format("2006-01-02T15:04:05-0700"))
-	if country != "" {
+	if country != "" && country != "All Countries" {
 		whereClause += fmt.Sprintf(" and country = '%s'", country)
 	}
-	if language != "" {
+	if language != "" && language != "All Languages" {
 		whereClause += fmt.Sprintf(" and languages like '%%%s%%'", language)
 	}
 	queryJobs := buildSelectStatement("jobs", targetColumnNames, whereClause)

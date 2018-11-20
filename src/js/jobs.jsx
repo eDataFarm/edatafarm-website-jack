@@ -109,7 +109,7 @@ class Jobs extends React.Component {
             return (
                 <div className="container">
                     <form className="container-fluid">
-                        <div className="col-md-3" >
+                        <div className="col-md-6" >
                             <Select title={'Filter By Country'}
                                     name={'country'}
                                     options = {this.state.countries}
@@ -119,15 +119,7 @@ class Jobs extends React.Component {
                                     handleChange = {this.handleCountry}
                             /> {/* Country Filter */}
                         </div>
-                        <div className="col-md-3">
-                            <Button
-                                action = {this.handleClearCountry}
-                                type = {'primary'}
-                                title = {'Clear Filter'}
-                                style={buttonStyle}
-                            /> {/* Clear country filter */}
-                        </div>
-                        <div className="col-md-3" >
+                        <div className="col-md-6" >
                             <Select title={'Filter By Language'}
                                     name={'language'}
                                     options = {this.state.languages}
@@ -136,14 +128,6 @@ class Jobs extends React.Component {
                                     style={selectStyle}
                                     handleChange = {this.handleLanguage}
                             /> {/* Language Filter */}
-                        </div>
-                        <div className="col-md-3">
-                            <Button
-                                action = {this.handleClearLanguage}
-                                type = {'primary'}
-                                title = {'Clear Filter'}
-                                style={buttonStyle}
-                            /> {/* Clear language filter */}
                         </div>
                     </form>
 
@@ -163,7 +147,7 @@ class Jobs extends React.Component {
         return (
             <div className="container">
                 <form className="container-fluid">
-                    <div className="col-md-3" >
+                    <div className="col-md-6" >
                         <Select title={'Filter By Country'}
                                 name={'country'}
                                 options = {this.state.countries}
@@ -173,15 +157,7 @@ class Jobs extends React.Component {
                                 handleChange = {this.handleCountry}
                         /> {/* Country Filter */}
                     </div>
-                    <div className="col-md-3">
-                        <Button
-                            action = {this.handleClearCountry}
-                            type = {'primary'}
-                            title = {'Clear Filter'}
-                            style={buttonStyle}
-                        /> {/* Clear country filter */}
-                    </div>
-                    <div className="col-md-3" >
+                    <div className="col-md-6" >
                         <Select title={'Filter By Language'}
                                 name={'language'}
                                 options = {this.state.languages}
@@ -190,14 +166,6 @@ class Jobs extends React.Component {
                                 style={selectStyle}
                                 handleChange = {this.handleLanguage}
                         /> {/* Language Filter */}
-                    </div>
-                    <div className="col-md-3">
-                        <Button
-                            action = {this.handleClearLanguage}
-                            type = {'primary'}
-                            title = {'Clear Filter'}
-                            style={buttonStyle}
-                        /> {/* Clear language filter */}
                     </div>
                 </form>
 
@@ -211,10 +179,6 @@ class Jobs extends React.Component {
             </div>
         );
     }
-}
-
-const buttonStyle = {
-    margin : '32px'
 }
 
 const selectStyle = {
