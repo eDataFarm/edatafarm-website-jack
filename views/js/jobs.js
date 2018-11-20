@@ -201,7 +201,7 @@ function (_React$Component2) {
           type: 'primary',
           title: 'Clear Filter',
           style: buttonStyle
-        }), " ")), React.createElement("h3", null, "There are no matching positions at the moment. Please clear any filters or check again later."), React.createElement("div", {
+        }), " ")), React.createElement("p", null, "There are no matching positions at the moment. Please clear any filters or check again later."), React.createElement("div", {
           className: "container"
         }, React.createElement("a", {
           className: "x-btn btn_style_rec x-btn-global",
@@ -273,8 +273,7 @@ var selectStyle = {
   width: '1200px'
 };
 var applyStyle = {
-  outline: 'none',
-  "margin-left": '45%'
+  outline: 'none'
 };
 
 var Job =

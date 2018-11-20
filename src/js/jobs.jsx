@@ -147,7 +147,7 @@ class Jobs extends React.Component {
                         </div>
                     </form>
 
-                    <h3>There are no matching positions at the moment. Please clear any filters or check again later.</h3>
+                    <p>There are no matching positions at the moment. Please clear any filters or check again later.</p>
 
                     <div className="container">
                         <a className={"x-btn btn_style_rec x-btn-global"}
@@ -224,7 +224,6 @@ const selectStyle = {
 
 const applyStyle = {
     outline: 'none',
-    "margin-left": '45%'
 }
 
 class Job extends React.Component {

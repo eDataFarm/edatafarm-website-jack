@@ -360,22 +360,6 @@ jQuery(function($){
 });
 
 
-jQuery(function($){
-
-
-function auto_refresh_div_2(){
-  	if(parseFloat($("span.smw-market-data-field.smw-change-indicator").first().text())>=0.00){
-     $(".smw-change-quote").removeClass('it_fall').addClass('it_rise'); 
-    }
-  	if(parseFloat($("span.smw-market-data-field.smw-change-indicator").first().text())<0.00){
-     $(".smw-change-quote").removeClass('it_rise').addClass('it_fall'); 
-    }
-  }
-  setInterval(auto_refresh_div_2, 1000);
- 	auto_refresh_div_2();
-  
-});
-
 jQuery(function($) {
     $(".tf_top_search_from").submit(function(e) {
             e.preventDefault();
