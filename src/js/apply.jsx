@@ -3,16 +3,26 @@ class Apply extends React.Component {
         super(props);
         this.state = {
             user: '',
-            loggedIn: false
         };
 
         this.serverRequest = this.serverRequest.bind(this);
     }
 
+    authenticate() {
+        this.WebAuth = new auth0.WebAuth({
+            domain: AUTH0_DOMAIN,
+            clientID: AUTH0_CLIENT_ID,
+            scope: "openid profile",
+            audience: AUTH0_API_AUDIENCE,
+            responseType: "token id_token",
+            redirectUri: AUTH0_CALLBACK_URL
+        });
+        this.WebAuth.authorize();
+    }
+
     serverRequest() {
         let email = localStorage.getItem("email");
         if (email) {
-            this.setState({loggedIn: true });
             $.get("../api/v1/users/" + email, res => {
                 if (res.Email !== "") {
                     this.setState({
@@ -20,6 +30,8 @@ class Apply extends React.Component {
                     });
                 }
             });
+        } else {
+            this.authenticate();
         }
     }
 
@@ -28,16 +40,11 @@ class Apply extends React.Component {
     }
 
     render() {
-        if (this.state.loggedIn) {
-            return (
-                <div className="container">
-                    <FormContainer user={this.state.user}/>
-                </div>
-            );
-        }
         return (
-            <h2>Please sign up above to fill out an application.</h2>
-        )
+            <div className="container">
+                <FormContainer user={this.state.user}/>
+            </div>
+        );
     }
 }
 

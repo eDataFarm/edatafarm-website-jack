@@ -29,6 +29,7 @@ class FormContainer extends React.Component {
         this.handlePosition = this.handlePosition.bind(this);
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleClearForm = this.handleClearForm.bind(this);
+        this.handleJobs = this.handleJobs.bind(this);
         this.handleCheckBox = this.handleCheckBox.bind(this);
         this.serverRequest = this.serverRequest.bind(this);
         this.lowercaseFirstLetter = this.lowercaseFirstLetter.bind(this);
@@ -118,6 +119,11 @@ class FormContainer extends React.Component {
                 ref3: ''
             },
         })
+    }
+
+    handleJobs(e) {
+        e.preventDefault();
+        window.location.assign('/jobs');
     }
 
     lowercaseFirstLetter(string) {
@@ -283,6 +289,13 @@ class FormContainer extends React.Component {
                     title = {'Clear'}
                     style={buttonStyle}
                 /> {/* Clear the form */}
+
+                <Button
+                    action = {this.handleJobs}
+                    type = {'primary'}
+                    title = {'Go to Jobs'}
+                    style={buttonStyle}
+                /> {/* Go back to jobs */}
             </form>
         );
     }

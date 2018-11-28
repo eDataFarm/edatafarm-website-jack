@@ -2,37 +2,6 @@ class Join extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            user: false
-        };
-
-        this.serverRequest = this.serverRequest.bind(this);
-    }
-
-    serverRequest() {
-        let email = localStorage.getItem("email");
-        $.get("../api/v1/users/" + email, res => {
-            if (res.Email !== "") {
-                this.setState({
-                    user: true
-                });
-            }
-        });
-    }
-
-    componentDidMount() {
-        this.serverRequest();
-    }
-
-
-    render() {
-        return <Jobs />;
-    }
-}
-
-class Jobs extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
             jobs: [],
             countries: [],
             country: '',
@@ -48,6 +17,11 @@ class Jobs extends React.Component {
     }
 
     serverRequest() {
+        if (this.props.country !== undefined) {
+            this.state.country = this.props.country;
+            this.props.country = undefined;
+        }
+
         let path = "../api/v1/jobs/?country=" + this.state.country + "&language=" + this.state.language;
 
         $.get(path, res => {
@@ -59,8 +33,12 @@ class Jobs extends React.Component {
 
     handleCountry(e) {
         this.state.country = e.target.value;
-        this.serverRequest();
-        this.render();
+        if (this.loggedIn) {
+            this.serverRequest();
+            this.render();
+        } else {
+            window.location.assign('/user');
+        }
     }
 
     handleLanguage(e) {
@@ -98,6 +76,13 @@ class Jobs extends React.Component {
                 languages: res
             });
         });
+
+        let idToken = localStorage.getItem("id_token");
+        if (idToken) {
+            this.loggedIn = true;
+        } else {
+            this.loggedIn = false;
+        }
     }
 
     componentWillMount() {
@@ -105,6 +90,24 @@ class Jobs extends React.Component {
     }
 
     render() {
+        if (!this.loggedIn) {
+            return (
+                <div className="container">
+                    <form className="container-fluid">
+                        <div className="col-md-6">
+                            <Select title={'Select a locale to begin'}
+                                    name={'country'}
+                                    options = {this.state.countries}
+                                    value = {this.state.country}
+                                    placeholder={'Select Country'}
+                                    style={selectStyle}
+                                    handleChange={this.handleCountry}
+                            /> {/* Country Filter */}
+                        </div>
+                    </form>
+                </div>
+            );
+        }
         if (this.state.jobs.length === 0) {
             return (
                 <div className="container">
@@ -132,15 +135,6 @@ class Jobs extends React.Component {
                     </form>
 
                     <p>There are no matching positions at the moment. Please clear any filters or check again later.</p>
-
-                    <div className="container">
-                        <a className={"x-btn btn_style_rec x-btn-global"}
-                           href={"../../user/index.html"}
-                           data-options={"thumbnail: ''"}
-                           style={applyStyle}>
-                            Apply Now
-                        </a>
-                    </div>
                 </div>
             );
         }
@@ -186,10 +180,6 @@ const selectStyle = {
     width: '1200px'
 }
 
-const applyStyle = {
-    outline: 'none',
-}
-
 class Job extends React.Component {
     constructor(props) {
         super(props);
@@ -208,13 +198,17 @@ class Job extends React.Component {
 
     serverRequest(job) {
         let email = localStorage.getItem("email");
-        $.post(
-            "../api/v1/jobs/apply/" + job.Id,
-            { applied: 1 , email: email},
-            res => {
-                this.setState({ applied: "Applied!", jobs: res });
-            }
-        );
+        if (email) {
+            $.post(
+                "../api/v1/jobs/apply/" + job.Id,
+                {applied: 1, email: email},
+                res => {
+                    this.setState({applied: "Applied!", jobs: res});
+                }
+            );
+        } else {
+            window.location.assign('/user');
+        }
     }
 
     render() {

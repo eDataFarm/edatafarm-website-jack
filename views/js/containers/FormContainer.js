@@ -67,6 +67,7 @@ function (_React$Component) {
     _this.handlePosition = _this.handlePosition.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleFormSubmit = _this.handleFormSubmit.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleClearForm = _this.handleClearForm.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handleJobs = _this.handleJobs.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleCheckBox = _this.handleCheckBox.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.serverRequest = _this.serverRequest.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.lowercaseFirstLetter = _this.lowercaseFirstLetter.bind(_assertThisInitialized(_assertThisInitialized(_this)));
@@ -180,6 +181,12 @@ function (_React$Component) {
           ref3: ''
         }
       });
+    }
+  }, {
+    key: "handleJobs",
+    value: function handleJobs(e) {
+      e.preventDefault();
+      window.location.assign('/jobs');
     }
   }, {
     key: "lowercaseFirstLetter",
@@ -314,6 +321,11 @@ function (_React$Component) {
         action: this.handleClearForm,
         type: 'primary',
         title: 'Clear',
+        style: buttonStyle
+      }), " ", React.createElement(Button, {
+        action: this.handleJobs,
+        type: 'primary',
+        title: 'Go to Jobs',
         style: buttonStyle
       }), " ");
     }
