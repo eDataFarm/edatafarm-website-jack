@@ -175,7 +175,9 @@ function (_React$Component) {
           placeholder: 'Select Language',
           style: selectStyle,
           handleChange: this.handleLanguage
-        }), " ")), React.createElement("p", null, "There are no matching positions at the moment. Please clear any filters or check again later."));
+        }), " ")), React.createElement("p", null, "Don't see your locale? We still want to hear from you. Please ", React.createElement("a", {
+          href: '../user/index.html'
+        }, "click here"), " to apply now"));
       }
 
       return React.createElement("div", {

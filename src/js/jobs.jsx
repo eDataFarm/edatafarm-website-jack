@@ -134,7 +134,7 @@ class Join extends React.Component {
                         </div>
                     </form>
 
-                    <p>There are no matching positions at the moment. Please clear any filters or check again later.</p>
+                    <p>Don't see your locale? We still want to hear from you. Please <a href={'../user/index.html'}>click here</a> to apply now</p>
                 </div>
             );
         }
