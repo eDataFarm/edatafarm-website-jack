@@ -134,7 +134,9 @@ class Join extends React.Component {
                         </div>
                     </form>
 
-                    <p>Don't see your locale? We still want to hear from you. Please <a href={'../user/index.html'}>click here</a> to apply now</p>
+                    <div className="col-md-offset-3" >
+                        <p>Don't see your locale? We still want to hear from you. Please <a href={'../user/index.html'}>click here</a> to apply now</p>
+                    </div>
                 </div>
             );
         }

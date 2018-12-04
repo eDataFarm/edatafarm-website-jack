@@ -175,9 +175,11 @@ function (_React$Component) {
           placeholder: 'Select Language',
           style: selectStyle,
           handleChange: this.handleLanguage
-        }), " ")), React.createElement("p", null, "Don't see your locale? We still want to hear from you. Please ", React.createElement("a", {
+        }), " ")), React.createElement("div", {
+          className: "col-md-offset-3"
+        }, React.createElement("p", null, "Don't see your locale? We still want to hear from you. Please ", React.createElement("a", {
           href: '../user/index.html'
-        }, "click here"), " to apply now"));
+        }, "click here"), " to apply now")));
       }
 
       return React.createElement("div", {

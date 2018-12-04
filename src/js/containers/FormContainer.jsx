@@ -246,7 +246,7 @@ class FormContainer extends React.Component {
                     title = {'Upload'}
                     style={buttonStyle}
                 /> { /* Upload */ }
-                {Math.round(this.state.loaded,2) } %
+                {/*{Math.round(this.state.loaded,2) } %*/}
 
                 <TextArea
                     title={'Resume'}

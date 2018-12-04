@@ -311,7 +311,7 @@ function (_React$Component) {
         type: 'primary',
         title: 'Upload',
         style: buttonStyle
-      }), " ", Math.round(this.state.loaded, 2), " %", React.createElement(TextArea, {
+      }), " ", React.createElement(TextArea, {
         title: 'Resume',
         rows: 10,
         name: 'resume',
