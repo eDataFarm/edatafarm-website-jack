@@ -16,6 +16,7 @@ class FormContainer extends React.Component {
                 major: '',
                 reference: '',
             },
+            selectedFile: null,
             loaded: 0,
             positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
             educationOptions: ['Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
@@ -93,6 +94,12 @@ class FormContainer extends React.Component {
         }
     }
 
+    downloadLink() {
+        if (this.state.newUser.filename) {
+            return  <a href={"../user/resumes/" + this.state.newUser.filename}>Download link</a>
+        }
+    }
+
     handleUpload(e) {
         e.preventDefault();
         const data = new FormData();
@@ -137,8 +144,8 @@ class FormContainer extends React.Component {
                 position: [],
                 languages: '',
                 referrer: '',
+                filename: '',
                 resume: '',
-                selectedFile: null,
                 loaded: 0,
                 education: [],
                 major: '',
@@ -247,6 +254,7 @@ class FormContainer extends React.Component {
                     style={buttonStyle}
                 /> { /* Upload */ }
                 {/*{Math.round(this.state.loaded,2) } %*/}
+                {this.downloadLink()}
 
                 <TextArea
                     title={'Resume'}

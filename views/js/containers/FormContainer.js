@@ -55,6 +55,7 @@ function (_React$Component) {
         major: '',
         reference: ''
       },
+      selectedFile: null,
       loaded: 0,
       positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
       educationOptions: ['Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
@@ -149,6 +150,15 @@ function (_React$Component) {
       }
     }
   }, {
+    key: "downloadLink",
+    value: function downloadLink() {
+      if (this.state.newUser.filename) {
+        return React.createElement("a", {
+          href: "../user/resumes/" + this.state.newUser.filename
+        }, "Download link");
+      }
+    }
+  }, {
     key: "handleUpload",
     value: function handleUpload(e) {
       var _this2 = this;
@@ -204,8 +214,8 @@ function (_React$Component) {
           position: [],
           languages: '',
           referrer: '',
+          filename: '',
           resume: '',
-          selectedFile: null,
           loaded: 0,
           education: [],
           major: '',
@@ -311,7 +321,7 @@ function (_React$Component) {
         type: 'primary',
         title: 'Upload',
         style: buttonStyle
-      }), " ", React.createElement(TextArea, {
+      }), " ", this.downloadLink(), React.createElement(TextArea, {
         title: 'Resume',
         rows: 10,
         name: 'resume',
