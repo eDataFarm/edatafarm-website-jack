@@ -50,14 +50,11 @@ type User struct {
 	Position 	[]string 	`db:"position" form:"position[]" binding:"required"`
 	Languages 	string 		`db:"languages" form:"languages" binding:"required"`
 	Referrer  	string 		`db:"referrer" form:"referrer"`
-	Resume 		string 		`db:"resume" form:"resume" binding:"required"`
+	Filename 	string 		`db:"file" form:"filename" binding:"required"`
+	Resume 		string 		`db:"resume" form:"resume"`
 	Education 	[]string	`db:"education" form:"education[]"`
 	Major  		string 		`db:"major" form:"major"`
-	About 		string 		`db:"about" form:"about" binding:"required"`
-	Skills  	string 		`db:"skills" form:"skills" binding:"required"`
-	Ref1  		string 		`db:"ref1" form:"ref1"`
-	Ref2  		string 		`db:"ref2" form:"ref2"`
-	Ref3  		string 		`db:"ref3" form:"ref3"`
+	Reference  	string 		`db:"reference" form:"reference" binding:"required"`
 	Admin		bool		`db:"admin" form:"admin"`
 }
 
@@ -128,6 +125,9 @@ func main() {
 	// Set the router as the default one shipped with Gin
 	router := gin.Default()
 
+	// Set a lower memory limit for multipart forms (default is 32 MiB)
+	router.MaxMultipartMemory = 8 << 20 // 8 MiB
+
 	// Serve frontend static files
 	router.Use(static.Serve("/", static.LocalFile("./views", true)))
 
@@ -143,6 +143,7 @@ func main() {
 		api.GET("/users", UsersHandler)
 		api.GET("/applicants/:jobID", UsersHandler)
 		api.POST("/users", CreateUser)
+		api.POST("/upload", UploadHandler)
 		api.GET("/jobs/:jobID", JobHandler)
 		api.GET("/jobs", JobsHandler)
 		api.POST("/jobs", CreateJob)
@@ -281,13 +282,7 @@ func initDB() {
 			socket         = os.Getenv("CLOUDSQL_SOCKET_PREFIX")
 		)
 
-		// MySQL Connection, comment out to use PostgreSQL.
-		// connection string format: USER:PASSWORD@unix(/cloudsql/)PROJECT_ID:REGION_ID:INSTANCE_ID/[DB_NAME]
-		//dbURI := fmt.Sprintf("%s:%s@unix(%s/%s)/", user, password, socket, connectionName)
-		//conn, err := sql.Open("mysql", dbURI)
-
-		// PostgresSQL Connection, uncomment to use.
-		// connection string format: user=USER password=PASSWORD host=/cloudsql/PROJECT_ID:REGION_ID:INSTANCE_ID/[ dbname=DB_NAME]
+		// PostgresSQL Connection
 		dbURI := fmt.Sprintf("user=postgres password=%s dbname=%s sslmode=disable", password, DBName)
 
 		// /cloudsql is used on App Engine.
@@ -343,7 +338,7 @@ func UsersHandler(c *gin.Context) {
 		user := new(User)
 		var education, position string
 		err = rows.Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &user.Languages, &user.Referrer,
-			&user.Resume, &education, &user.Major, &user.About, &user.Skills, &user.Ref1, &user.Ref2, &user.Ref3, &user.Admin)
+			&user.Filename, &user.Resume, &education, &user.Major, &user.Reference, &user.Admin)
 		if err != nil {
 			fmt.Println("Unable to scan userinfo from db. Error message", err.Error())
 			c.JSON(http.StatusServiceUnavailable, err.Error())
@@ -383,7 +378,7 @@ func UserHandler(c *gin.Context) {
 	queryUser := buildSelectStatement("userinfo", targetColumnNames, whereClause)
 	err := DBInstance.DB.QueryRow(queryUser).
 		Scan(&user.Id, &user.Name, &user.Email, &user.Phone, &position, &user.Languages, &user.Referrer,
-			&user.Resume, &education, &user.Major, &user.About, &user.Skills, &user.Ref1, &user.Ref2, &user.Ref3, &user.Admin)
+			&user.Filename, &user.Resume, &education, &user.Major, &user.Reference, &user.Admin)
 
 	if user.Email == "" {
 		// User email is invalid
@@ -420,9 +415,8 @@ func CreateUser(c *gin.Context) {
 		insertUser := buildUpsertStatement("userinfo", targetColumnNames[1:], "email")
 		execParams := make([]interface{}, 0, 50)
 		execParams = append( execParams, user.Name, user.Email, user.Phone,
-			strings.Join(user.Position, ","), user.Languages, user.Referrer, user.Resume,
-			strings.Join(user.Education, ","), user.Major, user.About, user.Skills,
-			user.Ref1, user.Ref2, user.Ref3, false)
+			strings.Join(user.Position, ","), user.Languages, user.Referrer, user.Filename, user.Resume,
+			strings.Join(user.Education, ","), user.Major, user.Reference, false)
 		// Need values twice for upsert statement parameters
 		execParams = append(execParams, execParams...)
 
@@ -446,6 +440,23 @@ func CreateUser(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusUnprocessableEntity, errors.New("unable to find appropriate user keys"))
 	}
+}
+
+// UploadHandle saves resume to disk
+func UploadHandler(c *gin.Context) {
+	// Source
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("get form err: %s", err.Error()))
+		return
+	}
+
+	if err := c.SaveUploadedFile(file, "views/user/resumes/" + file.Filename); err != nil {
+		c.String(http.StatusBadRequest, fmt.Sprintf("upload file err: %s", err.Error()))
+		return
+	}
+
+	c.String(http.StatusOK, fmt.Sprintf("File %s uploaded successfully", file.Filename))
 }
 
 func getJobs(country, language string) []*Job {

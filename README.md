@@ -10,9 +10,7 @@ This repo contains the code built for [eDataFarm](http://www.edatafarm.com).
 4. Run `mv .env.sample .env` and update with valid credentials
 5. Source the environment variables - `source .env`
 6. Update dependencies `go get ./...`
-7. Install postgresql database `brew install postgresql`
-8. Create the database `createdb edatafarm`
-9. Load the schema for users` psql  edatafarm < db/migrations/create_users`
-10. Load the schema for jobs` psql  edatafarm < db/migrations/create_jobs`
-11. Launch the application by running `go run main.go`
-12. Navigate to `localhost:3000` to view the application
+7. Run proxy to gcloud postgres DB `bin/cloud_sql_proxy -instances=edata-222505:us-central1:edatafarm=tcp:5432`
+ OR Install postgresql database `brew install postgresql`
+8. Launch the application by running `go run main.go`
+9. Navigate to `localhost:3000` to view the application

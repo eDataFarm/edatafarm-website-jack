@@ -6,6 +6,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
     "@kenshooui/react-multi-select": "^1.0.60",
+    "axios": "^0.18.0",
     "babel-preset-react-app": "^3.1.2",
     "bootstrap3": "^3.3.5",
     "font-awesome": "^4.7.0",

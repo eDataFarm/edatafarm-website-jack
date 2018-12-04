@@ -10,17 +10,15 @@ class FormContainer extends React.Component {
                 position: [],
                 languages: '',
                 referrer: '',
+                filename: '',
                 resume: '',
                 education: [],
                 major: '',
-                about: '',
-                skills: '',
-                ref1: '',
-                ref2: '',
-                ref3: ''
+                reference: '',
             },
+            loaded: 0,
             positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
-            educationOptions: ['G.E.D.', 'Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
+            educationOptions: ['Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
             users: [],
             loadedUser: false
         }
@@ -31,6 +29,8 @@ class FormContainer extends React.Component {
         this.handleClearForm = this.handleClearForm.bind(this);
         this.handleJobs = this.handleJobs.bind(this);
         this.handleCheckBox = this.handleCheckBox.bind(this);
+        this.handleSelectedFile = this.handleSelectedFile.bind(this);
+        this.handleUpload = this.handleUpload.bind(this);
         this.serverRequest = this.serverRequest.bind(this);
         this.lowercaseFirstLetter = this.lowercaseFirstLetter.bind(this);
     }
@@ -79,6 +79,34 @@ class FormContainer extends React.Component {
         )
     }
 
+    handleSelectedFile(e) {
+        let file = e.target.files[0];
+
+        if (file) {
+            this.setState(prevState => ({
+                    selectedFile: file,
+                    loaded: 0,
+                    newUser:
+                        {...prevState.newUser, filename: file.name}
+                })
+            )
+        }
+    }
+
+    handleUpload(e) {
+        e.preventDefault();
+        const data = new FormData();
+        data.append('file', this.state.selectedFile, this.state.selectedFile.name);
+
+        axios.post("../api/v1/upload", data, progressEvent => {
+            this.setState({
+                loaded: (progressEvent.loaded / progressEvent.total*100),
+            })
+        }).then(res => {
+            alert("File Upload ok", res.statusText)
+        });
+    }
+
     serverRequest(userData) {
         let email = localStorage.getItem("email");
         if (email) {
@@ -110,13 +138,11 @@ class FormContainer extends React.Component {
                 languages: '',
                 referrer: '',
                 resume: '',
+                selectedFile: null,
+                loaded: 0,
                 education: [],
                 major: '',
-                about: '',
-                skills: '',
-                ref1: '',
-                ref2: '',
-                ref3: ''
+                reference: ''
             },
         })
     }
@@ -208,55 +234,36 @@ class FormContainer extends React.Component {
                        handleChange = {this.handleInput}
                 /> {/* Major/Degree */}
 
-                <Input inputType={'text'}
-                       title= {'Resume'}
+                <Input inputType={'file'}
+                       title= {'Upload Resume'}
                        name= {'resume'}
-                       value={this.state.newUser.resume}
-                       placeholder = {'LinkedIn Profile URL'}
-                       handleChange = {this.handleInput}
+                       handleChange={this.handleSelectedFile}
                 /> {/* Resume */}
 
-                <TextArea
-                    title={'Tells us about yourself'}
-                    rows={10}
-                    name={'about'}
-                    value={this.state.newUser.about}
-                    placeholder={'Please write a few sentences explaining your why you are the best candidate for this position(s)'}
-                    handleChange={this.handleInput}
-                />{/* About you */}
+                <Button
+                    action = {this.handleUpload}
+                    type = {'primary'}
+                    title = {'Upload'}
+                    style={buttonStyle}
+                /> { /* Upload */ }
+                {Math.round(this.state.loaded,2) } %
 
                 <TextArea
-                    title={'Relevant Experience'}
+                    title={'Resume'}
                     rows={10}
-                    name={'skills'}
-                    value={this.state.newUser.skills}
-                    placeholder={'Please describe any work experience you have that has given you the skills to fulfill the requirements of the job(s) for which you are applying'}
+                    name={'resume'}
+                    value={this.state.newUser.resume}
+                    placeholder={'Paste resume or linked profile URL'}
                     handleChange={this.handleInput}
-                />{/* Skills */}
+                />{/* Paste resume or linked profile URL */}
 
                 <Input inputType={'text'}
-                       title= {'Professional Reference 1'}
-                       name= {'ref1'}
-                       value={this.state.newUser.ref1}
+                       title= {'Professional and/or personal reference'}
+                       name= {'reference'}
+                       value={this.state.newUser.reference}
                        placeholder = {'Name - Phone Number - Email'}
                        handleChange = {this.handleInput}
-                /> {/* Professional Reference */}
-
-                <Input inputType={'text'}
-                       title= {'Professional Reference 2'}
-                       name= {'ref2'}
-                       value={this.state.newUser.ref2}
-                       placeholder = {'Name - Phone Number - Email'}
-                       handleChange = {this.handleInput}
-                /> {/* Professional Reference */}
-
-                <Input inputType={'text'}
-                       title= {'Personal Reference'}
-                       name= {'ref3'}
-                       value={this.state.newUser.ref3}
-                       placeholder = {'Name - Phone Number - Email'}
-                       handleChange = {this.handleInput}
-                /> {/* Personal Reference */}
+                /> {/* Reference */}
 
                 <h2>Certification</h2>
                 <p>
@@ -281,7 +288,7 @@ class FormContainer extends React.Component {
                     type = {'primary'}
                     title = {'Submit'}
                     style={buttonStyle}
-                /> { /*Submit */ }
+                /> { /* Submit */ }
 
                 <Button
                     action = {this.handleClearForm}

@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS jobs
     (
         id serial primary key,
         title character varying(100) NOT NULL,
-        description character varying(500) NOT NULL,
+        description character varying(1000) NOT NULL,
         expiration timestamp not null default CURRENT_TIMESTAMP,
         applicants integer NOT NULL default 0,
         country character varying(100) NOT NULL,

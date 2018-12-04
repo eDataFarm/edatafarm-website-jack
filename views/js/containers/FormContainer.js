@@ -49,17 +49,15 @@ function (_React$Component) {
         position: [],
         languages: '',
         referrer: '',
+        filename: '',
         resume: '',
         education: [],
         major: '',
-        about: '',
-        skills: '',
-        ref1: '',
-        ref2: '',
-        ref3: ''
+        reference: ''
       },
+      loaded: 0,
       positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
-      educationOptions: ['G.E.D.', 'Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
+      educationOptions: ['Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
       users: [],
       loadedUser: false
     };
@@ -69,6 +67,8 @@ function (_React$Component) {
     _this.handleClearForm = _this.handleClearForm.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleJobs = _this.handleJobs.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleCheckBox = _this.handleCheckBox.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handleSelectedFile = _this.handleSelectedFile.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.handleUpload = _this.handleUpload.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.serverRequest = _this.serverRequest.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.lowercaseFirstLetter = _this.lowercaseFirstLetter.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     return _this;
@@ -132,9 +132,42 @@ function (_React$Component) {
       });
     }
   }, {
+    key: "handleSelectedFile",
+    value: function handleSelectedFile(e) {
+      var file = e.target.files[0];
+
+      if (file) {
+        this.setState(function (prevState) {
+          return {
+            selectedFile: file,
+            loaded: 0,
+            newUser: _objectSpread({}, prevState.newUser, {
+              filename: file.name
+            })
+          };
+        });
+      }
+    }
+  }, {
+    key: "handleUpload",
+    value: function handleUpload(e) {
+      var _this2 = this;
+
+      e.preventDefault();
+      var data = new FormData();
+      data.append('file', this.state.selectedFile, this.state.selectedFile.name);
+      axios.post("../api/v1/upload", data, function (progressEvent) {
+        _this2.setState({
+          loaded: progressEvent.loaded / progressEvent.total * 100
+        });
+      }).then(function (res) {
+        alert("File Upload ok", res.statusText);
+      });
+    }
+  }, {
     key: "serverRequest",
     value: function serverRequest(userData) {
-      var _this2 = this;
+      var _this3 = this;
 
       var email = localStorage.getItem("email");
 
@@ -143,7 +176,7 @@ function (_React$Component) {
       }
 
       $.post("../api/v1/users", userData, function (response) {
-        _this2.setState({
+        _this3.setState({
           user: response
         });
 
@@ -172,13 +205,11 @@ function (_React$Component) {
           languages: '',
           referrer: '',
           resume: '',
+          selectedFile: null,
+          loaded: 0,
           education: [],
           major: '',
-          about: '',
-          skills: '',
-          ref1: '',
-          ref2: '',
-          ref3: ''
+          reference: ''
         }
       });
     }
@@ -271,45 +302,27 @@ function (_React$Component) {
         placeholder: 'Enter your area of study emphasis',
         handleChange: this.handleInput
       }), " ", React.createElement(Input, {
-        inputType: 'text',
+        inputType: 'file',
+        title: 'Upload Resume',
+        name: 'resume',
+        handleChange: this.handleSelectedFile
+      }), " ", React.createElement(Button, {
+        action: this.handleUpload,
+        type: 'primary',
+        title: 'Upload',
+        style: buttonStyle
+      }), " ", Math.round(this.state.loaded, 2), " %", React.createElement(TextArea, {
         title: 'Resume',
+        rows: 10,
         name: 'resume',
         value: this.state.newUser.resume,
-        placeholder: 'LinkedIn Profile URL',
-        handleChange: this.handleInput
-      }), " ", React.createElement(TextArea, {
-        title: 'Tells us about yourself',
-        rows: 10,
-        name: 'about',
-        value: this.state.newUser.about,
-        placeholder: 'Please write a few sentences explaining your why you are the best candidate for this position(s)',
-        handleChange: this.handleInput
-      }), React.createElement(TextArea, {
-        title: 'Relevant Experience',
-        rows: 10,
-        name: 'skills',
-        value: this.state.newUser.skills,
-        placeholder: 'Please describe any work experience you have that has given you the skills to fulfill the requirements of the job(s) for which you are applying',
+        placeholder: 'Paste resume or linked profile URL',
         handleChange: this.handleInput
       }), React.createElement(Input, {
         inputType: 'text',
-        title: 'Professional Reference 1',
-        name: 'ref1',
-        value: this.state.newUser.ref1,
-        placeholder: 'Name - Phone Number - Email',
-        handleChange: this.handleInput
-      }), " ", React.createElement(Input, {
-        inputType: 'text',
-        title: 'Professional Reference 2',
-        name: 'ref2',
-        value: this.state.newUser.ref2,
-        placeholder: 'Name - Phone Number - Email',
-        handleChange: this.handleInput
-      }), " ", React.createElement(Input, {
-        inputType: 'text',
-        title: 'Personal Reference',
-        name: 'ref3',
-        value: this.state.newUser.ref3,
+        title: 'Professional and/or personal reference',
+        name: 'reference',
+        value: this.state.newUser.reference,
         placeholder: 'Name - Phone Number - Email',
         handleChange: this.handleInput
       }), " ", React.createElement("h2", null, "Certification"), React.createElement("p", null, "I certify that the information contained in this application is correct to the best of my knowledge. I understand that to falsify information is grounds for rejection or discharge should I be hired. I authorize any person, organization or company listed on this application to furnish you any and all information concerning my previous employment, education and qualifications for employment. I also authorize you to request and receive such information."), React.createElement("p", null, "In consideration for my employment, I agree to abide by the rules and regulations of the company, which may be changed, withdrawn, added or interpreted at any time, at the company\u2019s sole discretion and without prior notice to me. I also acknowledge that my employment may be terminated, or any offer or acceptance of employment withdrawn, at any time, with or without cause, and with or without prior notice at the discretion of the company or myself."), React.createElement("p", null, "By submitting this application I acknowledge the above statement"), React.createElement(Button, {

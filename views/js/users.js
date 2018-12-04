@@ -160,7 +160,9 @@ function (_React$Component3) {
         className: "panel-heading"
       }, "#", this.props.user.Id, " "), React.createElement("div", {
         className: "panel-body"
-      }, React.createElement("div", null, React.createElement("b", null, this.props.user.Name)), React.createElement("div", null, this.props.user.About)), React.createElement("div", {
+      }, React.createElement("div", null, React.createElement("b", null, this.props.user.Name)), React.createElement("div", null, this.props.user.Resume), React.createElement("div", null, React.createElement("a", {
+        href: "../user/resume/" + this.props.user.File
+      }, "Download link"))), React.createElement("div", {
         className: "panel-footer"
       }, React.createElement("div", {
         className: "pull-right"
