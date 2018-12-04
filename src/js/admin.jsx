@@ -124,7 +124,7 @@ class JobListing extends React.Component {
                     <div className="panel-footer">
                         <div className="pull-right">
                             Edit &nbsp;
-                            <a href={"new.html?JobID=" + this.props.job.Id} >
+                            <a href={"new.html?JobID=" + this.props.job.Id} className="btn btn-default" style={buttonStyle}>
                                 <span className="glyphicon glyphicon-pencil" />
                             </a>
                         </div>
@@ -139,6 +139,10 @@ class JobListing extends React.Component {
             </div>
         )
     }
+}
+
+const buttonStyle = {
+    marginBottom : '5px'
 }
 
 ReactDOM.render(<Openings />, document.getElementById('openings'));

@@ -166,7 +166,7 @@ function (_React$Component3) {
       localStorage.removeItem("id_token");
       localStorage.removeItem("access_token");
       localStorage.removeItem("profile");
-      location.reload();
+      location.assign("https://" + AUTH0_DOMAIN + "/v2/logout");
     }
   }, {
     key: "serverRequest",

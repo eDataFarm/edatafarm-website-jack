@@ -94,7 +94,7 @@ class User extends React.Component {
 
     render() {
         return (
-            <div className="col-xs-4">
+            <div className="col-md-6">
                 <div className="panel panel-default">
                     <div className="panel-heading">
                         #{this.props.user.Id}{" "}
@@ -102,7 +102,7 @@ class User extends React.Component {
                     <div className="panel-body">
                         <div><b>{this.props.user.Name}</b></div>
                         <div>{this.props.user.Resume}</div>
-                        <div><a href={"../user/resume/" + this.props.user.File}>Download link</a></div>
+                        <div><a href={"../user/resumes/" + this.props.user.Filename}>Resume</a></div>
                     </div>
                     <div className="panel-footer">
                         <div className="pull-right">

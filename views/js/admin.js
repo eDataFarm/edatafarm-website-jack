@@ -193,7 +193,9 @@ function (_React$Component3) {
       }, React.createElement("div", {
         className: "pull-right"
       }, "Edit \xA0", React.createElement("a", {
-        href: "new.html?JobID=" + this.props.job.Id
+        href: "new.html?JobID=" + this.props.job.Id,
+        className: "btn btn-default",
+        style: buttonStyle
       }, React.createElement("span", {
         className: "glyphicon glyphicon-pencil"
       }))), React.createElement("div", null, React.createElement("a", {
@@ -205,4 +207,7 @@ function (_React$Component3) {
   return JobListing;
 }(React.Component);
 
+var buttonStyle = {
+  marginBottom: '5px'
+};
 ReactDOM.render(React.createElement(Openings, null), document.getElementById('openings'));

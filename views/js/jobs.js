@@ -287,16 +287,22 @@ function (_React$Component2) {
         className: "panel-body"
       }, React.createElement("div", null, React.createElement("b", null, this.props.job.Title)), React.createElement("div", null, this.props.job.Description), React.createElement("div", null, React.createElement("b", null, "Languages:"), " ", this.props.job.Languages)), React.createElement("div", {
         className: "panel-footer"
+      }, React.createElement("span", {
+        className: "pull-right"
       }, this.props.job.Applied, " Apply \xA0", React.createElement("a", {
         onClick: this.apply,
-        className: "btn btn-default"
+        className: "btn btn-default",
+        style: buttonStyle
       }, React.createElement("span", {
         className: "glyphicon glyphicon-pencil"
-      })))));
+      }))), React.createElement("div", null, " Expires: ", this.props.job.Expiration))));
     }
   }]);
 
   return Job;
 }(React.Component);
 
+var buttonStyle = {
+  marginBottom: '5px'
+};
 ReactDOM.render(React.createElement(Join, null), document.getElementById('jobs'));

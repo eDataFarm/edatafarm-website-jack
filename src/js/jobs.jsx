@@ -225,15 +225,22 @@ class Job extends React.Component {
                         <div><b>Languages:</b> {this.props.job.Languages}</div>
                     </div>
                     <div className="panel-footer">
-                        {this.props.job.Applied} Apply &nbsp;
-                        <a onClick={this.apply} className="btn btn-default">
-                            <span className="glyphicon glyphicon-pencil" />
-                        </a>
+                        <span className="pull-right">
+                            {this.props.job.Applied} Apply &nbsp;
+                            <a onClick={this.apply} className="btn btn-default" style={buttonStyle}>
+                                <span className="glyphicon glyphicon-pencil" />
+                            </a>
+                        </span>
+                        <div> Expires: {this.props.job.Expiration}</div>
                     </div>
                 </div>
             </div>
         )
     }
+}
+
+const buttonStyle = {
+    marginBottom : '5px'
 }
 
 ReactDOM.render(<Join />, document.getElementById('jobs'));

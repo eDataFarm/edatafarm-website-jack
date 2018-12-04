@@ -153,7 +153,7 @@ function (_React$Component3) {
     key: "render",
     value: function render() {
       return React.createElement("div", {
-        className: "col-xs-4"
+        className: "col-md-6"
       }, React.createElement("div", {
         className: "panel panel-default"
       }, React.createElement("div", {
@@ -161,8 +161,8 @@ function (_React$Component3) {
       }, "#", this.props.user.Id, " "), React.createElement("div", {
         className: "panel-body"
       }, React.createElement("div", null, React.createElement("b", null, this.props.user.Name)), React.createElement("div", null, this.props.user.Resume), React.createElement("div", null, React.createElement("a", {
-        href: "../user/resume/" + this.props.user.File
-      }, "Download link"))), React.createElement("div", {
+        href: "../user/resumes/" + this.props.user.Filename
+      }, "Resume"))), React.createElement("div", {
         className: "panel-footer"
       }, React.createElement("div", {
         className: "pull-right"

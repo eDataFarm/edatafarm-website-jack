@@ -1,4 +1,4 @@
 .env
 .idea
 /bin
-/views/user/resume/*
+/views/user/resumes/*
