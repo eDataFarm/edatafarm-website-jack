@@ -132,9 +132,7 @@ function (_React$Component2) {
       return React.createElement("a", {
         onClick: this.authenticate,
         className: "btn btn-primary btn-lg btn-login btn-block"
-      }, React.createElement("span", null, "Sign Up ", React.createElement("i", {
-        className: "la la-arrow-right"
-      })));
+      }, "Sign Up");
     }
   }]);
 

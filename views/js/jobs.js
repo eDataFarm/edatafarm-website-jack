@@ -140,7 +140,6 @@ function (_React$Component) {
         }, React.createElement("div", {
           className: "col-md-6"
         }, React.createElement(Select, {
-          title: 'Select a locale to begin',
           name: 'country',
           options: this.state.countries,
           value: this.state.country,

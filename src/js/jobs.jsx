@@ -95,8 +95,7 @@ class Join extends React.Component {
                 <div className="container">
                     <form className="container-fluid">
                         <div className="col-md-6">
-                            <Select title={'Select a locale to begin'}
-                                    name={'country'}
+                            <Select name={'country'}
                                     options = {this.state.countries}
                                     value = {this.state.country}
                                     placeholder={'Select Country'}
