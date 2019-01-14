@@ -60,7 +60,8 @@ function (_React$Component) {
       positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
       educationOptions: ['Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
       users: [],
-      loadedUser: false
+      loadedUser: false,
+      alertDangerDisplay: 'none'
     };
     _this.handleInput = _this.handleInput.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handlePosition = _this.handlePosition.bind(_assertThisInitialized(_assertThisInitialized(_this)));
@@ -72,6 +73,8 @@ function (_React$Component) {
     _this.handleUpload = _this.handleUpload.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.serverRequest = _this.serverRequest.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.lowercaseFirstLetter = _this.lowercaseFirstLetter.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.clearAlerts = _this.clearAlerts.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+    _this.setDangerAlert = _this.setDangerAlert.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     return _this;
   }
   /* This lifecycle hook gets executed when the component mounts */
@@ -192,7 +195,7 @@ function (_React$Component) {
 
         alert('Application form was submitted');
       }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert(textStatus + ': ' + errorThrown);
+        alert('Opps! Something went wrong. Please check your input and try again');
       });
     }
   }, {
@@ -200,12 +203,45 @@ function (_React$Component) {
     value: function handleFormSubmit(e) {
       e.preventDefault();
       var userData = this.state.newUser;
+      this.clearAlerts();
+
+      if (userData.name.length < 1) {
+        this.setDangerAlert("Please enter your full name");
+        return;
+      }
+
+      if (userData.phone.length < 10) {
+        this.setDangerAlert("Phone number must have at least 10 digits.");
+        return;
+      }
+
+      if (userData.position.length < 1) {
+        this.setDangerAlert("Please select the position(s) you are interested in");
+        return;
+      }
+
+      if (userData.languages.length < 1) {
+        this.setDangerAlert("Please enter any language(s) you are fluent in");
+        return;
+      }
+
+      if (userData.filename.length < 1) {
+        this.setDangerAlert("Please upload your resume file");
+        return;
+      }
+
+      if (userData.reference.length < 1) {
+        this.setDangerAlert("Please enter your reference information");
+        return;
+      }
+
       this.serverRequest(userData);
     }
   }, {
     key: "handleClearForm",
     value: function handleClearForm(e) {
       e.preventDefault();
+      this.clearAlerts();
       this.setState({
         newUser: {
           name: '',
@@ -233,6 +269,24 @@ function (_React$Component) {
     key: "lowercaseFirstLetter",
     value: function lowercaseFirstLetter(string) {
       return string.charAt(0).toLowerCase() + string.slice(1);
+    }
+  }, {
+    key: "clearAlerts",
+    value: function clearAlerts() {
+      var e = document.getElementById("alert-danger");
+
+      if (e) {
+        e.textContent = "Fields with an asterix(*) are required";
+      }
+
+      this.state.alertDangerDisplay = 'none';
+    }
+  }, {
+    key: "setDangerAlert",
+    value: function setDangerAlert(string) {
+      var e = document.getElementById("alert-danger");
+      e.textContent = string;
+      this.state.alertDangerDisplay = 'block';
     }
   }, {
     key: "componentWillMount",
@@ -264,9 +318,13 @@ function (_React$Component) {
       return React.createElement("form", {
         className: "container-fluid",
         onSubmit: this.handleFormSubmit
-      }, React.createElement(Input, {
+      }, React.createElement("div", {
+        className: "alert alert-danger",
+        style: alertDangerStyle,
+        id: "alert-danger"
+      }, "Fields with an asterix(*) are required"), React.createElement(Input, {
         inputType: 'text',
-        title: 'Full Name',
+        title: 'Full Name*',
         name: 'name',
         value: this.state.newUser.name,
         placeholder: 'Enter your name',
@@ -274,22 +332,22 @@ function (_React$Component) {
       }), " ", React.createElement(Input, {
         inputType: 'text',
         name: 'phone',
-        title: 'Phone number',
+        title: 'Phone number*',
         value: this.state.newUser.phone,
         placeholder: 'Enter your phone number',
         handleChange: this.handleInput
       }), " ", React.createElement(CheckBox, {
-        title: 'Position(s) you are interested in',
+        title: 'Position(s) you are interested in*',
         name: 'position',
         options: this.state.positionOptions,
         selectedOptions: this.state.newUser.position,
         handleChange: this.handlePosition
       }), " ", React.createElement(Input, {
         inputType: 'text',
-        title: 'Languages',
+        title: 'Languages*',
         name: 'languages',
         value: this.state.newUser.languages,
-        placeholder: 'Comma separated list of any language(s) other than English you are fluent in',
+        placeholder: 'Comma separated list of any language(s) you are fluent in',
         handleChange: this.handleInput
       }), " ", React.createElement(Input, {
         inputType: 'text',
@@ -313,7 +371,7 @@ function (_React$Component) {
         handleChange: this.handleInput
       }), " ", React.createElement(Input, {
         inputType: 'file',
-        title: 'Upload Resume',
+        title: 'Upload Resume*',
         name: 'resume',
         handleChange: this.handleSelectedFile
       }), " ", React.createElement(Button, {
@@ -330,7 +388,7 @@ function (_React$Component) {
         handleChange: this.handleInput
       }), React.createElement(Input, {
         inputType: 'text',
-        title: 'Professional and/or personal reference',
+        title: 'Professional and/or personal reference*',
         name: 'reference',
         value: this.state.newUser.reference,
         placeholder: 'Name - Phone Number - Email',
@@ -359,4 +417,7 @@ function (_React$Component) {
 
 var buttonStyle = {
   margin: '10px'
+};
+var alertDangerStyle = {
+  display: (void 0).state.alertDangerDisplay
 };

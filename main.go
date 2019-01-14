@@ -410,7 +410,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	if user.Name != "" && user.Resume != "" {
+	if user.Name != "" && user.Email != "" {
 		targetColumnNames := structs.Names(&User{})
 		insertUser := buildUpsertStatement("userinfo", targetColumnNames[1:], "email")
 		execParams := make([]interface{}, 0, 50)

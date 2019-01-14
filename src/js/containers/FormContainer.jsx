@@ -21,7 +21,8 @@ class FormContainer extends React.Component {
             positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
             educationOptions: ['Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
             users: [],
-            loadedUser: false
+            loadedUser: false,
+            alertDangerDisplay: 'none'
         }
 
         this.handleInput = this.handleInput.bind(this);
@@ -34,6 +35,8 @@ class FormContainer extends React.Component {
         this.handleUpload = this.handleUpload.bind(this);
         this.serverRequest = this.serverRequest.bind(this);
         this.lowercaseFirstLetter = this.lowercaseFirstLetter.bind(this);
+        this.clearAlerts = this.clearAlerts.bind(this);
+        this.setDangerAlert = this.setDangerAlert.bind(this);
     }
 
     /* This lifecycle hook gets executed when the component mounts */
@@ -124,18 +127,52 @@ class FormContainer extends React.Component {
             this.setState({ user: response });
             alert('Application form was submitted');
         }).fail((jqXHR, textStatus, errorThrown) => {
-            alert(textStatus + ': ' + errorThrown);
+            alert('Opps! Something went wrong. Please check your input and try again');
         });
     }
 
     handleFormSubmit(e) {
         e.preventDefault();
         let userData = this.state.newUser;
+
+        this.clearAlerts();
+
+        if (userData.name.length < 1) {
+            this.setDangerAlert("Please enter your full name");
+            return;
+        }
+
+        if (userData.phone.length < 10) {
+            this.setDangerAlert("Phone number must have at least 10 digits.");
+            return;
+        }
+
+        if (userData.position.length < 1) {
+            this.setDangerAlert("Please select the position(s) you are interested in");
+            return;
+        }
+
+        if (userData.languages.length < 1) {
+            this.setDangerAlert("Please enter any language(s) you are fluent in");
+            return;
+        }
+
+        if (userData.filename.length < 1) {
+            this.setDangerAlert("Please upload your resume file");
+            return;
+        }
+
+        if (userData.reference.length < 1) {
+            this.setDangerAlert("Please enter your reference information");
+            return;
+        }
+
         this.serverRequest(userData);
     }
 
     handleClearForm(e) {
         e.preventDefault();
+        this.clearAlerts();
         this.setState({
             newUser: {
                 name: '',
@@ -163,6 +200,20 @@ class FormContainer extends React.Component {
         return string.charAt(0).toLowerCase() + string.slice(1);
     }
 
+    clearAlerts() {
+        var e = document.getElementById("alert-danger");
+        if (e) {
+            e.textContent = "Fields with an asterix(*) are required";
+        }
+        this.state.alertDangerDisplay = 'none';
+    }
+
+    setDangerAlert(string) {
+        var e = document.getElementById("alert-danger");
+        e.textContent = string;
+        this.state.alertDangerDisplay = 'block';
+    }
+
     componentWillMount() {
         let idToken = localStorage.getItem("id_token");
         if (idToken) {
@@ -186,9 +237,14 @@ class FormContainer extends React.Component {
 
         return (
             <form className="container-fluid" onSubmit={this.handleFormSubmit}>
-
+                {/*<a>Fields with an asterix(*) are required</a>*/}
+                {/*<br/>*/}
+                <div className="alert alert-danger"
+                      style={alertDangerStyle}
+                      id= {"alert-danger"}
+                >Fields with an asterix(*) are required</div>
                 <Input inputType={'text'}
-                       title= {'Full Name'}
+                       title= {'Full Name*'}
                        name= {'name'}
                        value={this.state.newUser.name}
                        placeholder = {'Enter your name'}
@@ -197,13 +253,13 @@ class FormContainer extends React.Component {
 
                 <Input inputType={'text'}
                        name={'phone'}
-                       title= {'Phone number'}
+                       title= {'Phone number*'}
                        value={this.state.newUser.phone}
                        placeholder = {'Enter your phone number'}
                        handleChange={this.handleInput}
                 /> {/* Phone number */}
 
-                <CheckBox  title={'Position(s) you are interested in'}
+                <CheckBox  title={'Position(s) you are interested in*'}
                            name={'position'}
                            options={this.state.positionOptions}
                            selectedOptions = { this.state.newUser.position}
@@ -211,10 +267,10 @@ class FormContainer extends React.Component {
                 /> {/* Position */}
 
                 <Input inputType={'text'}
-                       title= {'Languages'}
+                       title= {'Languages*'}
                        name= {'languages'}
                        value={this.state.newUser.languages}
-                       placeholder = {'Comma separated list of any language(s) other than English you are fluent in'}
+                       placeholder = {'Comma separated list of any language(s) you are fluent in'}
                        handleChange = {this.handleInput}
                 /> {/* Languages */}
 
@@ -242,7 +298,7 @@ class FormContainer extends React.Component {
                 /> {/* Major/Degree */}
 
                 <Input inputType={'file'}
-                       title= {'Upload Resume'}
+                       title= {'Upload Resume*'}
                        name= {'resume'}
                        handleChange={this.handleSelectedFile}
                 /> {/* Resume */}
@@ -266,7 +322,7 @@ class FormContainer extends React.Component {
                 />{/* Paste resume or linked profile URL */}
 
                 <Input inputType={'text'}
-                       title= {'Professional and/or personal reference'}
+                       title= {'Professional and/or personal reference*'}
                        name= {'reference'}
                        value={this.state.newUser.reference}
                        placeholder = {'Name - Phone Number - Email'}
@@ -318,4 +374,7 @@ class FormContainer extends React.Component {
 
 const buttonStyle = {
     margin : '10px'
+}
+const alertDangerStyle = {
+    display: this.state.alertDangerDisplay
 }
