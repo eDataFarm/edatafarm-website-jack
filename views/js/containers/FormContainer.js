@@ -67,7 +67,6 @@ function (_React$Component) {
     _this.handlePosition = _this.handlePosition.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleFormSubmit = _this.handleFormSubmit.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleClearForm = _this.handleClearForm.bind(_assertThisInitialized(_assertThisInitialized(_this)));
-    _this.handleJobs = _this.handleJobs.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleCheckBox = _this.handleCheckBox.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleSelectedFile = _this.handleSelectedFile.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handleUpload = _this.handleUpload.bind(_assertThisInitialized(_assertThisInitialized(_this)));
@@ -194,6 +193,7 @@ function (_React$Component) {
         });
 
         alert('Application form was submitted');
+        window.location.assign('/user/thanks.html');
       }).fail(function (jqXHR, textStatus, errorThrown) {
         alert('Opps! Something went wrong. Please check your input and try again');
       });
@@ -258,12 +258,6 @@ function (_React$Component) {
           reference: ''
         }
       });
-    }
-  }, {
-    key: "handleJobs",
-    value: function handleJobs(e) {
-      e.preventDefault();
-      window.location.assign('/jobs');
     }
   }, {
     key: "lowercaseFirstLetter",
@@ -402,11 +396,6 @@ function (_React$Component) {
         action: this.handleClearForm,
         type: 'primary',
         title: 'Clear',
-        style: buttonStyle
-      }), " ", React.createElement(Button, {
-        action: this.handleJobs,
-        type: 'primary',
-        title: 'Go to Jobs',
         style: buttonStyle
       }), " ");
     }

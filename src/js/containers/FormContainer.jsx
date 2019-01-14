@@ -29,7 +29,6 @@ class FormContainer extends React.Component {
         this.handlePosition = this.handlePosition.bind(this);
         this.handleFormSubmit = this.handleFormSubmit.bind(this);
         this.handleClearForm = this.handleClearForm.bind(this);
-        this.handleJobs = this.handleJobs.bind(this);
         this.handleCheckBox = this.handleCheckBox.bind(this);
         this.handleSelectedFile = this.handleSelectedFile.bind(this);
         this.handleUpload = this.handleUpload.bind(this);
@@ -126,6 +125,7 @@ class FormContainer extends React.Component {
         $.post("../api/v1/users", userData, response => {
             this.setState({ user: response });
             alert('Application form was submitted');
+            window.location.assign('/user/thanks.html');
         }).fail((jqXHR, textStatus, errorThrown) => {
             alert('Opps! Something went wrong. Please check your input and try again');
         });
@@ -189,11 +189,6 @@ class FormContainer extends React.Component {
                 reference: ''
             },
         })
-    }
-
-    handleJobs(e) {
-        e.preventDefault();
-        window.location.assign('/jobs');
     }
 
     lowercaseFirstLetter(string) {
@@ -361,12 +356,6 @@ class FormContainer extends React.Component {
                     style={buttonStyle}
                 /> {/* Clear the form */}
 
-                <Button
-                    action = {this.handleJobs}
-                    type = {'primary'}
-                    title = {'Go to Jobs'}
-                    style={buttonStyle}
-                /> {/* Go back to jobs */}
             </form>
         );
     }
