@@ -60,8 +60,7 @@ function (_React$Component) {
       positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
       educationOptions: ['Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
       users: [],
-      loadedUser: false,
-      alertDangerDisplay: 'none'
+      loadedUser: false
     };
     _this.handleInput = _this.handleInput.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handlePosition = _this.handlePosition.bind(_assertThisInitialized(_assertThisInitialized(_this)));
@@ -272,15 +271,12 @@ function (_React$Component) {
       if (e) {
         e.textContent = "Fields with an asterix(*) are required";
       }
-
-      this.state.alertDangerDisplay = 'none';
     }
   }, {
     key: "setDangerAlert",
     value: function setDangerAlert(string) {
       var e = document.getElementById("alert-danger");
       e.textContent = string;
-      this.state.alertDangerDisplay = 'block';
     }
   }, {
     key: "componentWillMount",
@@ -314,7 +310,6 @@ function (_React$Component) {
         onSubmit: this.handleFormSubmit
       }, React.createElement("div", {
         className: "alert alert-danger",
-        style: alertDangerStyle,
         id: "alert-danger"
       }, "Fields with an asterix(*) are required"), React.createElement(Input, {
         inputType: 'text',
@@ -406,7 +401,4 @@ function (_React$Component) {
 
 var buttonStyle = {
   margin: '10px'
-};
-var alertDangerStyle = {
-  display: (void 0).state.alertDangerDisplay
 };

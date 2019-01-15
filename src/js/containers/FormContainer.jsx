@@ -21,8 +21,7 @@ class FormContainer extends React.Component {
             positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
             educationOptions: ['Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
             users: [],
-            loadedUser: false,
-            alertDangerDisplay: 'none'
+            loadedUser: false
         }
 
         this.handleInput = this.handleInput.bind(this);
@@ -200,13 +199,11 @@ class FormContainer extends React.Component {
         if (e) {
             e.textContent = "Fields with an asterix(*) are required";
         }
-        this.state.alertDangerDisplay = 'none';
     }
 
     setDangerAlert(string) {
         var e = document.getElementById("alert-danger");
         e.textContent = string;
-        this.state.alertDangerDisplay = 'block';
     }
 
     componentWillMount() {
@@ -235,7 +232,6 @@ class FormContainer extends React.Component {
                 {/*<a>Fields with an asterix(*) are required</a>*/}
                 {/*<br/>*/}
                 <div className="alert alert-danger"
-                      style={alertDangerStyle}
                       id= {"alert-danger"}
                 >Fields with an asterix(*) are required</div>
                 <Input inputType={'text'}
@@ -363,7 +359,4 @@ class FormContainer extends React.Component {
 
 const buttonStyle = {
     margin : '10px'
-}
-const alertDangerStyle = {
-    display: this.state.alertDangerDisplay
 }
