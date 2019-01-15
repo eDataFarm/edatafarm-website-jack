@@ -102,7 +102,7 @@ class User extends React.Component {
                     <div className="panel-body">
                         <div><b>{this.props.user.Name}</b></div>
                         <div>{this.props.user.Resume}</div>
-                        <div><a href={"../user/resumes/" + this.props.user.Filename}>Resume</a></div>
+                        <div><a href={"../user/resumes/" + this.props.user.Filename}>Resume/CV</a></div>
                     </div>
                     <div className="panel-footer">
                         <div className="pull-right">

@@ -293,7 +293,7 @@ class FormContainer extends React.Component {
                 /> {/* Major/Degree */}
 
                 <Input inputType={'file'}
-                       title= {'Upload Resume*'}
+                       title= {'Upload Resume/CV'}
                        name= {'resume'}
                        handleChange={this.handleSelectedFile}
                 /> {/* Resume */}
@@ -308,7 +308,7 @@ class FormContainer extends React.Component {
                 {this.downloadLink()}
 
                 <TextArea
-                    title={'Resume'}
+                    title={'Resume/CV*'}
                     rows={10}
                     name={'resume'}
                     value={this.state.newUser.resume}
