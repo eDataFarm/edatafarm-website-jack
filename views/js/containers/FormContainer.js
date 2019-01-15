@@ -365,7 +365,7 @@ function (_React$Component) {
         handleChange: this.handleInput
       }), " ", React.createElement(Input, {
         inputType: 'file',
-        title: 'Upload Resume*',
+        title: 'Upload Resume/CV',
         name: 'resume',
         handleChange: this.handleSelectedFile
       }), " ", React.createElement(Button, {
@@ -374,7 +374,7 @@ function (_React$Component) {
         title: 'Upload',
         style: buttonStyle
       }), " ", this.downloadLink(), React.createElement(TextArea, {
-        title: 'Resume',
+        title: 'Resume/CV*',
         rows: 10,
         name: 'resume',
         value: this.state.newUser.resume,

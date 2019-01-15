@@ -162,7 +162,7 @@ function (_React$Component3) {
         className: "panel-body"
       }, React.createElement("div", null, React.createElement("b", null, this.props.user.Name)), React.createElement("div", null, this.props.user.Resume), React.createElement("div", null, React.createElement("a", {
         href: "../user/resumes/" + this.props.user.Filename
-      }, "Resume"))), React.createElement("div", {
+      }, "Resume/CV"))), React.createElement("div", {
         className: "panel-footer"
       }, React.createElement("div", {
         className: "pull-right"
