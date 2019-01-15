@@ -90,23 +90,6 @@ class Join extends React.Component {
     }
 
     render() {
-        if (!this.loggedIn) {
-            return (
-                <div className="container">
-                    <form className="container-fluid">
-                        <div className="col-md-6">
-                            <Select name={'country'}
-                                    options = {this.state.countries}
-                                    value = {this.state.country}
-                                    placeholder={'Select Country'}
-                                    style={selectStyle}
-                                    handleChange={this.handleCountry}
-                            /> {/* Country Filter */}
-                        </div>
-                    </form>
-                </div>
-            );
-        }
         if (this.state.jobs.length === 0) {
             return (
                 <div className="container">

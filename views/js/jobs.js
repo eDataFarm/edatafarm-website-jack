@@ -132,23 +132,6 @@ function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      if (!this.loggedIn) {
-        return React.createElement("div", {
-          className: "container"
-        }, React.createElement("form", {
-          className: "container-fluid"
-        }, React.createElement("div", {
-          className: "col-md-6"
-        }, React.createElement(Select, {
-          name: 'country',
-          options: this.state.countries,
-          value: this.state.country,
-          placeholder: 'Select Country',
-          style: selectStyle,
-          handleChange: this.handleCountry
-        }), " ")));
-      }
-
       if (this.state.jobs.length === 0) {
         return React.createElement("div", {
           className: "container"
