@@ -50,8 +50,8 @@ type User struct {
 	Position 	[]string 	`db:"position" form:"position[]" binding:"required"`
 	Languages 	string 		`db:"languages" form:"languages" binding:"required"`
 	Referrer  	string 		`db:"referrer" form:"referrer"`
-	Filename 	string 		`db:"file" form:"filename" binding:"required"`
-	Resume 		string 		`db:"resume" form:"resume"`
+	Filename 	string 		`db:"file" form:"filename"`
+	Resume 		string 		`db:"resume" form:"resume" binding:"required"`
 	Education 	[]string	`db:"education" form:"education[]"`
 	Major  		string 		`db:"major" form:"major"`
 	Reference  	string 		`db:"reference" form:"reference" binding:"required"`

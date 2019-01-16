@@ -21,7 +21,8 @@ class FormContainer extends React.Component {
             positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
             educationOptions: ['Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
             users: [],
-            loadedUser: false
+            loadedUser: false,
+            admin: false
         }
 
         this.handleInput = this.handleInput.bind(this);
@@ -116,14 +117,8 @@ class FormContainer extends React.Component {
     }
 
     serverRequest(userData) {
-        let email = localStorage.getItem("email");
-        if (email) {
-            this.state.newUser.email = email
-        }
-
         $.post("../api/v1/users", userData, response => {
             this.setState({ user: response });
-            alert('Application form was submitted');
             window.location.assign('/user/thanks.html');
         }).fail((jqXHR, textStatus, errorThrown) => {
             alert('Opps! Something went wrong. Please check your input and try again');
@@ -146,6 +141,11 @@ class FormContainer extends React.Component {
             return;
         }
 
+        if (userData.email.length < 3 || !/\@/.test(userData.email)) {
+            this.setDangerAlert("Enter valid email address");
+            return
+        }
+
         if (userData.position.length < 1) {
             this.setDangerAlert("Please select the position(s) you are interested in");
             return;
@@ -156,7 +156,7 @@ class FormContainer extends React.Component {
             return;
         }
 
-        if (userData.filename.length < 1) {
+        if (userData.resume.length < 1) {
             this.setDangerAlert("Please upload your resume file");
             return;
         }
@@ -213,6 +213,18 @@ class FormContainer extends React.Component {
         } else {
             $(this).find(':input[type=primary]').prop('disabled', 'disabled');
         }
+
+        let email = localStorage.getItem("email");
+        if (email) {
+            $.get("../api/v1/users/" + email, res => {
+                if (res.Admin === true) {
+                    this.setState({
+                        admin: true
+                    });
+                }
+            });
+            this.state.newUser.email = email
+        }
     }
 
     render() {
@@ -249,6 +261,14 @@ class FormContainer extends React.Component {
                        placeholder = {'Enter your phone number'}
                        handleChange={this.handleInput}
                 /> {/* Phone number */}
+
+                <Input inputType={'text'}
+                       name={'email'}
+                       title= {'Email*'}
+                       value={this.state.newUser.email}
+                       placeholder = {'Enter your email address'}
+                       handleChange={this.handleInput}
+                /> {/* Email address */}
 
                 <CheckBox  title={'Position(s) you are interested in*'}
                            name={'position'}

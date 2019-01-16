@@ -60,7 +60,8 @@ function (_React$Component) {
       positionOptions: ['Transcriber', 'Project Manager', 'Data Analyst Engineer'],
       educationOptions: ['Associates', 'Bachelors', 'Masters', 'Doctorate', 'Other'],
       users: [],
-      loadedUser: false
+      loadedUser: false,
+      admin: false
     };
     _this.handleInput = _this.handleInput.bind(_assertThisInitialized(_assertThisInitialized(_this)));
     _this.handlePosition = _this.handlePosition.bind(_assertThisInitialized(_assertThisInitialized(_this)));
@@ -180,12 +181,6 @@ function (_React$Component) {
     value: function serverRequest(userData) {
       var _this3 = this;
 
-      var email = localStorage.getItem("email");
-
-      if (email) {
-        this.state.newUser.email = email;
-      }
-
       $.post("../api/v1/users", userData, function (response) {
         _this3.setState({
           user: response
@@ -214,6 +209,13 @@ function (_React$Component) {
         return;
       }
 
+      console.log("EMAIL", userData.email);
+
+      if (userData.email.length < 3 || !/\@/.test(userData.email)) {
+        this.setDangerAlert("Enter valid email address");
+        return;
+      }
+
       if (userData.position.length < 1) {
         this.setDangerAlert("Please select the position(s) you are interested in");
         return;
@@ -224,7 +226,7 @@ function (_React$Component) {
         return;
       }
 
-      if (userData.filename.length < 1) {
+      if (userData.resume.length < 1) {
         this.setDangerAlert("Please upload your resume file");
         return;
       }
@@ -281,12 +283,27 @@ function (_React$Component) {
   }, {
     key: "componentWillMount",
     value: function componentWillMount() {
+      var _this4 = this;
+
       var idToken = localStorage.getItem("id_token");
 
       if (idToken) {
         $(this).find(':input[type=primary]').prop('disabled', '');
       } else {
         $(this).find(':input[type=primary]').prop('disabled', 'disabled');
+      }
+
+      var email = localStorage.getItem("email");
+
+      if (email) {
+        $.get("../api/v1/users/" + email, function (res) {
+          if (res.Admin === true) {
+            _this4.setState({
+              admin: true
+            });
+          }
+        });
+        this.state.newUser.email = email;
       }
     }
   }, {
@@ -324,6 +341,13 @@ function (_React$Component) {
         title: 'Phone number*',
         value: this.state.newUser.phone,
         placeholder: 'Enter your phone number',
+        handleChange: this.handleInput
+      }), " ", React.createElement(Input, {
+        inputType: 'text',
+        name: 'email',
+        title: 'Email*',
+        value: this.state.newUser.email,
+        placeholder: 'Enter your email address',
         handleChange: this.handleInput
       }), " ", React.createElement(CheckBox, {
         title: 'Position(s) you are interested in*',

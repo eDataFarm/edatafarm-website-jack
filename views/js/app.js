@@ -132,7 +132,7 @@ function (_React$Component2) {
       return React.createElement("a", {
         onClick: this.authenticate,
         className: "btn btn-primary btn-lg btn-login btn-block"
-      }, "Sign Up");
+      }, "PM Log In");
     }
   }]);
 

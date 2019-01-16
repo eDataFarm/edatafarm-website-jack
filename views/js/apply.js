@@ -37,36 +37,18 @@ function (_React$Component) {
   }
 
   _createClass(Apply, [{
-    key: "authenticate",
-    value: function authenticate() {
-      this.WebAuth = new auth0.WebAuth({
-        domain: AUTH0_DOMAIN,
-        clientID: AUTH0_CLIENT_ID,
-        scope: "openid profile",
-        audience: AUTH0_API_AUDIENCE,
-        responseType: "token id_token",
-        redirectUri: AUTH0_CALLBACK_URL
-      });
-      this.WebAuth.authorize();
-    }
-  }, {
     key: "serverRequest",
     value: function serverRequest() {
       var _this2 = this;
 
       var email = localStorage.getItem("email");
-
-      if (email) {
-        $.get("../api/v1/users/" + email, function (res) {
-          if (res.Email !== "") {
-            _this2.setState({
-              user: res
-            });
-          }
-        });
-      } else {
-        this.authenticate();
-      }
+      $.get("../api/v1/users/" + email, function (res) {
+        if (res.Email !== "") {
+          _this2.setState({
+            user: res
+          });
+        }
+      });
     }
   }, {
     key: "componentDidMount",

@@ -87,7 +87,7 @@ class Home extends React.Component {
     }
 
     render() {
-        return (<a onClick={this.authenticate} className="btn btn-primary btn-lg btn-login btn-block">Sign Up</a>);
+        return (<a onClick={this.authenticate} className="btn btn-primary btn-lg btn-login btn-block">PM Log In</a>);
     }
 }
 
