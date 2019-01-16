@@ -186,7 +186,6 @@ function (_React$Component) {
           user: response
         });
 
-        alert('Application form was submitted');
         window.location.assign('/user/thanks.html');
       }).fail(function (jqXHR, textStatus, errorThrown) {
         alert('Opps! Something went wrong. Please check your input and try again');
@@ -208,8 +207,6 @@ function (_React$Component) {
         this.setDangerAlert("Phone number must have at least 10 digits.");
         return;
       }
-
-      console.log("EMAIL", userData.email);
 
       if (userData.email.length < 3 || !/\@/.test(userData.email)) {
         this.setDangerAlert("Enter valid email address");
