@@ -505,6 +505,13 @@ jQuery(function($) {
             $('#authorize-button').on('click', function(){
                 handleAuthClick();
             });
+
+            $('#message_search').on('click', function(){
+                $('.table-inbox tbody').remove();
+                $('.modal').remove();
+                const query = $('#frm_search').text();
+                searchInbox(query);
+            });
         }
     }
 
@@ -518,13 +525,6 @@ jQuery(function($) {
             $('#worker-button').removeClass("hidden");
             $('#worker-button').on('click', function(){
                 handleWorkerClick();
-            });
-
-            $('#message_search').on('click', function(){
-                $('.table-inbox tbody').remove();
-                $('.modal').remove();
-                const query = $('#frm_search').text();
-                searchInbox(query);
             });
         }
     }
