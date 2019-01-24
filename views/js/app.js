@@ -187,7 +187,7 @@ function (_React$Component3) {
     value: function render() {
       return React.createElement("a", {
         onClick: this.logout
-      }, "Log out");
+      }, "PM Log out");
     }
   }]);
 
