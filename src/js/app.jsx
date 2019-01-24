@@ -123,7 +123,7 @@ class LoggedIn extends React.Component {
 
     render() {
         return (
-            <a onClick={this.logout}>Log out</a>
+            <a onClick={this.logout}>PM Log out</a>
         );
     }
 }
