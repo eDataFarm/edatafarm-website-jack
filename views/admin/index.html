@@ -284,7 +284,7 @@
                                         <div class="container">
                                             <span>Administrative Access:</span>
                                             <button id="pm-login-button" class="btn btn-primary" style="margin: 15px;">PM Log In</button>
-                                            <button id="review-button" class="btn btn-primary" style="margin: 15px;">Review Accounts</button>
+                                            <button id="review-button" class="btn btn-primary hidden" style="margin: 15px;">Review Accounts</button>
                                         </div>
                                     </div>
                                 </div>
@@ -467,6 +467,10 @@ jQuery(function($) {
 
     $('#pm-login-button').on('click', function(){
         window.location.assign('/admin/openings.html');
+    });
+
+    $('#review-button').on('click', function(){
+        window.location.href = "https://edatafarm.com";
     });
 
     function handleAuthClick() {

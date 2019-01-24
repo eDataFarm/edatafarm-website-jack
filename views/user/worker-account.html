@@ -282,9 +282,17 @@
                                     <br>
                                     <div class="row">
                                         <div class="container">
-                                            <span>User Account Credentials (not eDataFarm.com login):</span>
-                                            <button id="worker-button" class="btn btn-primary hidden" style="margin: 15px;">Loft/LP</button>
-                                            <button id="crowdcompute-button" class="btn btn-primary" style="margin: 15px;">CrowdCompute</button>
+                                            <span>User Account Credentials Provided:</span>
+                                            <div class="css-tooltip">
+                                                <a href="https://edatafarm.com" class="css-tooltip">Transcriber Platform</a>
+                                                <div class="bottom">
+                                                    <img src="/public/images/incognito_tooltip.png"/>
+                                                    <p>right click the link to open a new incognito window using Chrome</p>
+                                                    <i></i>
+                                                </div>
+                                            </div>
+                                            <button id="worker-button-1" class="btn btn-primary hidden" style="margin: 15px;">Loft/LP</button>
+                                            <button id="crowdcompute-button" class="btn btn-primary hidden" style="margin: 15px;">CrowdCompute</button>
                                         </div>
                                     </div>
                                 </div>
@@ -474,6 +482,10 @@ jQuery(function($) {
         }, handleWorkerResult);
     }
 
+    $('#crowdcompute-button').on('click', function(){
+        window.location.href = "https://edatafarm.com";
+    });
+
     function handleAuthClick() {
         gapi.auth.authorize({
             client_id: clientId,
@@ -535,11 +547,9 @@ jQuery(function($) {
 
     function searchInbox(query) {
         const searchTerms = 'from:"' + query + '" OR to:"' + query + '" OR subject:"' + query + '"';
-        // console.log("QUERY", searchTerms);
+        console.log("QUERY", searchTerms);
         const request = gapi.client.gmail.users.messages.list({
             'userId': 'me',
-            'labelIds': 'INBOX',
-            'maxResults': 10,
             'q': searchTerms
         });
 
