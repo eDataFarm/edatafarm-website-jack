@@ -182,8 +182,6 @@ function (_React$Component) {
   }, {
     key: "render",
     value: function render() {
-      var _this4 = this;
-
       return React.createElement("form", {
         className: "container-fluid",
         onSubmit: this.handleFormSubmit
@@ -217,16 +215,6 @@ function (_React$Component) {
         value: this.state.newMessage.message,
         placeholder: 'Enter your message',
         handleChange: this.handleInput
-      }), React.createElement(ReCaptcha, {
-        ref: function ref(el) {
-          _this4.captchaDemo = el;
-        },
-        size: "normal",
-        "data-theme": "dark",
-        render: "explicit",
-        sitekey: "6Lc9IY0UAAAAAPJTW6li2-l5ZngZzHmw1ImpqifR",
-        onloadCallback: this.onLoadRecaptcha,
-        verifyCallback: this.verifyCallback
       }), React.createElement(Button, {
         action: this.handleFormSubmit,
         type: 'primary',

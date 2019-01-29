@@ -167,15 +167,15 @@ class ContactContainer extends React.Component {
                     handleChange={this.handleInput}
                 />{/* Message */}
 
-                <ReCaptcha
-                    ref={(el) => {this.captchaDemo = el;}}
-                    size="normal"
-                    data-theme="dark"
-                    render="explicit"
-                    sitekey="6Lc9IY0UAAAAAPJTW6li2-l5ZngZzHmw1ImpqifR"
-                    onloadCallback={this.onLoadRecaptcha}
-                    verifyCallback={this.verifyCallback}
-                />
+                {/*<ReCaptcha*/}
+                    {/*ref={(el) => {this.captchaDemo = el;}}*/}
+                    {/*size="normal"*/}
+                    {/*data-theme="dark"*/}
+                    {/*render="explicit"*/}
+                    {/*sitekey="6Lc9IY0UAAAAAPJTW6li2-l5ZngZzHmw1ImpqifR"*/}
+                    {/*onloadCallback={this.onLoadRecaptcha}*/}
+                    {/*verifyCallback={this.verifyCallback}*/}
+                {/*/>*/}
 
                 <Button
                     action = {this.handleFormSubmit}
