@@ -8691,7 +8691,7 @@ table {
   content: counter(step-counter) '.';
   position: absolute;
   left: 0;
-  color: #bc1622;
+  color: #666;
   font-weight: 400;
 }
 .imagery {
