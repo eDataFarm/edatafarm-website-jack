@@ -27,7 +27,7 @@ class ContactContainer extends React.Component {
     componentDidMount() {
         loadReCaptcha();
         if (this.captchaDemo) {
-            console.log("started, just a second...")
+            // console.log("started, just a second...")
             this.captchaDemo.reset();
         }
     }
@@ -40,7 +40,7 @@ class ContactContainer extends React.Component {
 
     verifyCallback(recaptchaToken) {
         // Here you will get the final recaptchaToken!!!
-        console.log(recaptchaToken, "<= your recaptcha token")
+        // console.log(recaptchaToken, "<= your recaptcha token")
         if (recaptchaToken) {
             this.setState({
                 isVerified: true
