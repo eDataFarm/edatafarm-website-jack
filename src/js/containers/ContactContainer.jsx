@@ -25,6 +25,7 @@ class ContactContainer extends React.Component {
     /* This lifecycle hook gets executed when the component mounts */
 
     componentDidMount() {
+        loadReCaptcha();
         if (this.captchaDemo) {
             console.log("started, just a second...")
             this.captchaDemo.reset();
@@ -132,9 +133,7 @@ class ContactContainer extends React.Component {
             <form className="container-fluid" onSubmit={this.handleFormSubmit}>
                 {/*<a>Fields with an asterix(*) are required</a>*/}
                 {/*<br/>*/}
-                <div className="alert alert-danger"
-                      id= {"alert-danger"}
-                >Fields with an asterix(*) are required</div>
+                <div className="alert alert-danger" id= {"alert-danger"}>Fields with an asterix(*) are required</div>
                 <Input inputType={'text'}
                        title= {'Your Name*'}
                        name= {'name'}
@@ -167,15 +166,15 @@ class ContactContainer extends React.Component {
                     handleChange={this.handleInput}
                 />{/* Message */}
 
-                {/*<ReCaptcha*/}
-                    {/*ref={(el) => {this.captchaDemo = el;}}*/}
-                    {/*size="normal"*/}
-                    {/*data-theme="dark"*/}
-                    {/*render="explicit"*/}
-                    {/*sitekey="6Lc9IY0UAAAAAPJTW6li2-l5ZngZzHmw1ImpqifR"*/}
-                    {/*onloadCallback={this.onLoadRecaptcha}*/}
-                    {/*verifyCallback={this.verifyCallback}*/}
-                {/*/>*/}
+                <ReCaptcha
+                    ref={(el) => {this.captchaDemo = el;}}
+                    size="normal"
+                    data-theme="dark"
+                    render="explicit"
+                    sitekey="6Lc9IY0UAAAAAPJTW6li2-l5ZngZzHmw1ImpqifR"
+                    onloadCallback={this.onLoadRecaptcha}
+                    verifyCallback={this.verifyCallback}
+                />
 
                 <Button
                     action = {this.handleFormSubmit}
