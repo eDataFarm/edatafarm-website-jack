@@ -226,7 +226,7 @@ function (_React$Component) {
         size: "normal",
         "data-theme": "dark",
         render: "explicit",
-        sitekey: "6Lc9IY0UAAAAAPJTW6li2-l5ZngZzHmw1ImpqifR",
+        sitekey: "6Lc1q40UAAAAABSCri2aWvoGl_8uvLDSz7T1_kQq",
         onloadCallback: this.onLoadRecaptcha,
         verifyCallback: this.verifyCallback
       }), React.createElement(Button, {

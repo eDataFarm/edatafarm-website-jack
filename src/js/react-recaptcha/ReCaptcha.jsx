@@ -124,18 +124,16 @@ class ReCaptcha extends React.Component {
                 />
             );
         } else {
-
-        return (
-            <div id={this.props.elementID}
-                 className="g-recaptcha"
-                 data-sitekey={this.props.sitekey}
-                 data-theme={this.props.theme}
-                 data-type={this.props.type}
-                 data-size={this.props.size}
-                 data-badge={this.props.badge}
-                 data-tabindex={this.props.tabindex}
-            />
-        );
+            return (
+                <div id={this.props.elementID}
+                     className="g-recaptcha"
+                     data-sitekey={this.props.sitekey}
+                     data-theme={this.props.theme}
+                     data-type={this.props.type}
+                     data-size={this.props.size}
+                     data-badge={this.props.badge}
+                     data-tabindex={this.props.tabindex}
+                />);
       }
     }
 }
