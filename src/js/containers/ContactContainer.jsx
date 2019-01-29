@@ -57,11 +57,11 @@ class ContactContainer extends React.Component {
     }
 
     serverRequest(userData) {
-        $.post("../api/v1/users", userData, response => {
-            this.setState({ user: response });
-            window.location.assign('/user/thanks.html');
-        }).fail((jqXHR, textStatus, errorThrown) => {
-            alert('Opps! Something went wrong. Please check your input and try again');
+        $.post("../api/v1/contact", userData, response => {
+            this.setState({ newMessage: response });
+            alert('Message sent!');
+        }).fail(() => {
+            alert('Oops! Something went wrong. Please check your input and try again');
         });
     }
 

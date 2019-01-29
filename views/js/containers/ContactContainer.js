@@ -100,14 +100,14 @@ function (_React$Component) {
     value: function serverRequest(userData) {
       var _this2 = this;
 
-      $.post("../api/v1/users", userData, function (response) {
+      $.post("../api/v1/contact", userData, function (response) {
         _this2.setState({
-          user: response
+          newMessage: response
         });
 
-        window.location.assign('/user/thanks.html');
-      }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert('Opps! Something went wrong. Please check your input and try again');
+        alert('Message sent!');
+      }).fail(function () {
+        alert('Oops! Something went wrong. Please check your input and try again');
       });
     }
   }, {

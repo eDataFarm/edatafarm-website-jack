@@ -75,6 +75,14 @@ type NewJob struct {
 	Languages []string
 }
 
+// Contact us from website
+type Contact struct {
+	Name 		string 		`db:"name" form:"name" binding:"required"`
+	Email 		string 		`db:"email" form:"email" binding:"required"`
+	Subject  	string 		`db:"subject" form:"subject"`
+	Message 	string 		`db:"message" form:"message" binding:"required"`
+}
+
 // Create an empty list of jobs
 var jobs []*Job
 
@@ -150,6 +158,7 @@ func main() {
 		api.POST("/jobs/apply/:jobID", ApplyJob)
 		api.GET("/countries", CountriesHandler)
 		api.GET("/languages", LanguagesHandler)
+		api.POST("/contact", ContactUs)
 	}
 
 	// Read in a toml file or the 	env variables
@@ -651,6 +660,27 @@ func CountriesHandler(c *gin.Context) {
 
 func LanguagesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, getLanguages())
+}
+
+// ContactUs emails information
+func ContactUs(c *gin.Context) {
+	contact:= Contact{}
+
+	if err := c.Bind(&contact); err != nil {
+		fmt.Println("json decoding:", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  "json decoding : " + err.Error(),
+			"status": http.StatusBadRequest,
+		})
+		return
+	}
+
+	if contact.Name != "" && contact.Email != "" {
+		// return a pointer to the new contact
+		c.JSON(http.StatusOK, &contact)
+	} else {
+		c.JSON(http.StatusUnprocessableEntity, errors.New("unable to find appropriate contact keys"))
+	}
 }
 
 func getValueString(numberOfColumns int) string {

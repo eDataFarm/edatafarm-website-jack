@@ -187,8 +187,8 @@ function (_React$Component) {
         });
 
         window.location.assign('/user/thanks.html');
-      }).fail(function (jqXHR, textStatus, errorThrown) {
-        alert('Opps! Something went wrong. Please check your input and try again');
+      }).fail(function () {
+        alert('Oops! Something went wrong. Please check your input and try again');
       });
     }
   }, {

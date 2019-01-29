@@ -120,8 +120,8 @@ class FormContainer extends React.Component {
         $.post("../api/v1/users", userData, response => {
             this.setState({ user: response });
             window.location.assign('/user/thanks.html');
-        }).fail((jqXHR, textStatus, errorThrown) => {
-            alert('Opps! Something went wrong. Please check your input and try again');
+        }).fail(() => {
+            alert('Oops! Something went wrong. Please check your input and try again');
         });
     }
 
